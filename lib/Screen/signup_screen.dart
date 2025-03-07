@@ -263,11 +263,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           const Text(
                             'J\'accepte le traitement de ',
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(
+                                fontSize: 10.0,
+                                color: Colors.white),
                           ),
                           Text(
                             'Données personnelles',
                             style: TextStyle(
+                              fontSize: 10.0,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),

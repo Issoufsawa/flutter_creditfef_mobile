@@ -11,11 +11,7 @@ class LocationPage extends StatefulWidget {
 }
 
 class _LocationPageState extends State<LocationPage> {
-  // Définir les coordonnées des points d'intérêt
-  final List<List<double>> coordinates = [
-    [-6.175329, 106.827253],  // Jakarta
-    [-6.200000, 106.800000],  // Autre point
-  ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +29,7 @@ class _LocationPageState extends State<LocationPage> {
     );
   }
 
+  // Méthode pour afficher l'en-tête avec le logo et le titre "Détails du Profil"
   Widget _head() {
     return Stack(
       children: [
@@ -40,7 +37,7 @@ class _LocationPageState extends State<LocationPage> {
           children: [
             Container(
               width: double.infinity,
-              height: 248,  // You can adjust the height as needed, but it's fine here
+              height: 248,
               decoration: BoxDecoration(
                 color: Color(0xff0c355f),
                 borderRadius: BorderRadius.only(
@@ -48,50 +45,35 @@ class _LocationPageState extends State<LocationPage> {
                   bottomRight: Radius.circular(20),
                 ),
               ),
-              child: Stack(
-                children: [
-
-                  Padding(
-                    padding: const EdgeInsets.only(top: 35, left: 30),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Row to display image and text side by side
-                        Row(
-                          children: [
-                            // Image instead of icon
-
-                            Text(
-                              'Crédit fef',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 20,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 60),
-                        Text(
-                          'Localiser une de nos agences',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 20,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
+              child: Padding(
+                padding: const EdgeInsets.only(top: 40, left: 3),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/logo.png', // Logo de l'application
+                      height: 137,
+                      width: 560,
+                      fit: BoxFit.cover,
                     ),
-                  ),
-
-                ],
+                    SizedBox(height: 30), // Espacement sous le logo
+                    Text(
+                      'Localiser une de nos agences ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center, // Centrer le texte
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
         ),
       ],
     );
-
   }
 
 }

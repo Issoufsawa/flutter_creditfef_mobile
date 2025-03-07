@@ -36,9 +36,6 @@ class _SignInScreenState extends State<SignInScreen> {
         return;
       }
 
-      print("Email: ${numero.text}");
-      print("Mot de passe: ${password.text}");
-
       // Envoi de la requête HTTP pour vérifier les informations de connexion
       try {
 
@@ -118,7 +115,7 @@ if (responseData == "1" || responseData == "2") {
                       Text(
                         'Content de vous revoir',
                         style: TextStyle(
-                          fontSize: 30.0,
+                          fontSize: 20.0,
                           fontWeight: FontWeight.w900,
                           color: Colors.white, // Change text color to white
                         ),
@@ -220,7 +217,9 @@ if (responseData == "1" || responseData == "2") {
                               ),
                               const Text(
                                 'Souviens-toi de moi',
-                                style: TextStyle(color: Colors.white), // Light white color for text
+                                style: TextStyle(
+                                    fontSize: 10.0,
+                                    color: Colors.white), // Light white color for text
                               ),
                             ],
 
@@ -229,6 +228,7 @@ if (responseData == "1" || responseData == "2") {
                             child: Text(
                               'Mot de passe oublié?',
                               style: TextStyle(
+                                fontSize: 10.0,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white, // Change color to white
                               ),
@@ -236,7 +236,7 @@ if (responseData == "1" || responseData == "2") {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20.0),
+                      const SizedBox(height: 15.0),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -263,7 +263,7 @@ if (responseData == "1" || responseData == "2") {
 
                         ),
                       ),
-                      const SizedBox(height: 25.0),
+                      const SizedBox(height: 20.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

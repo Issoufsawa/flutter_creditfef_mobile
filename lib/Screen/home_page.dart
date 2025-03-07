@@ -236,7 +236,7 @@ class _MyHomePageState extends State<MyHomePage> {
           left: 30,
           child: Container(
             height: 200,
-            width: 350,
+            width: 300,
             decoration: BoxDecoration(
               color: Color.fromARGB(255, 6, 113, 213),
               borderRadius: BorderRadius.circular(15),
