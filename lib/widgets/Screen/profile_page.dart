@@ -89,7 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             Divider(),
                             ListTile(
                               title: Text(
-                                'Mot de passe oublié?',
+                                'Modifier le mot de passe',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,

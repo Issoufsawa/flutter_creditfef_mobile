@@ -175,23 +175,30 @@ class _WalletPageState extends State<WalletPage> {
               child: _head(), // Affichage de l'en-tête avec le logo et le titre
             ),
             SliverToBoxAdapter(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end, // Aligner les enfants du Column vers le bas
-                children: [
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _showQRScanner(context); // Ouvrir le scanner QR
-                      },
-                      child: Text("Scanner le QR Code"),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.orange,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 130, vertical: 80), // Ajout d'un espace entre l'en-tête et le bouton
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end, // Aligner les enfants du Column vers le bas
+                  children: [
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _showQRScanner(context); // Ouvrir le scanner QR
+                        },
+                        child: Text("Scanner le QR Code"),
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.orange,
+                          textStyle: TextStyle(
+                            fontSize: 17, // Augmenter la taille du texte
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 20), // Espacement sous le bouton pour aérer un peu
-                ],
+                    SizedBox(height: 20), // Espacement sous le bouton pour aérer un peu
+                  ],
+                ),
               ),
             ),
           ],

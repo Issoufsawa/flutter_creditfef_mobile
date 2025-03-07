@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:location/location.dart'; // Importer le package location
 
 class LocationPage extends StatefulWidget {
   const LocationPage({super.key, required this.title});
@@ -11,25 +13,63 @@ class LocationPage extends StatefulWidget {
 }
 
 class _LocationPageState extends State<LocationPage> {
+  LatLng _currentLocation = LatLng(48.8566, 2.3522); // Exemple: Paris
+  late Location _location; // Variable pour gérer la localisation
+  late LocationData _locationData; // Contiendra les données de localisation de l'utilisateur
+  late MapController _mapController; // Déclarer un MapController
 
+  // Liste des coordonnées supplémentaires à ajouter
+  final List<LatLng> _additionalLocations = [
+    LatLng(5.403278, -4.006528),
+    LatLng(5.348639, -4.017222),
+    LatLng(5.3449284, -4.0838084),
+    LatLng(5.290778, -3.958556),
+    LatLng(5.300528, -3.976000),
+    LatLng(5.3566104, -3.879401),
+    LatLng(5.3922778, -3.9780833),
+    LatLng(5.4854722, -4.0534444),
+    LatLng(5.3237835, -4.3766238),
+  ];
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: SizedBox(height: 340, child: _head()),
-            ),
-
-          ],
-        ),
-      ),
-    );
+  void initState() {
+    super.initState();
+    _location = Location();
+    _mapController = MapController(); // Initialiser MapController
+    _getCurrentLocation();  // Récupérer la localisation dès que l'écran est initialisé
   }
 
-  // Méthode pour afficher l'en-tête avec le logo et le titre "Détails du Profil"
+  // Fonction pour obtenir la position actuelle de l'utilisateur
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled = await _location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await _location.requestService();
+      if (!serviceEnabled) {
+        return; // Si le service est toujours désactivé, arrêter
+      }
+    }
+
+    PermissionStatus permission = await _location.hasPermission();
+    if (permission == PermissionStatus.denied) {
+      permission = await _location.requestPermission();
+      if (permission != PermissionStatus.granted) {
+        return; // Si la permission est toujours refusée, arrêter
+      }
+    }
+
+    _locationData = await _location.getLocation();
+
+    // Mettre à jour la localisation
+    setState(() {
+      _currentLocation = LatLng(_locationData.latitude!, _locationData.longitude!);
+    });
+
+    // Centrer la carte sur la position actuelle après avoir récupéré la localisation
+    // Déplacer la carte à la nouvelle position avec un zoom de 13
+    _mapController.move(_currentLocation, 13.0);
+  }
+
+  // Méthode pour afficher l'en-tête avec le logo et le titre "Localiser une de nos agences"
   Widget _head() {
     return Stack(
       children: [
@@ -58,7 +98,7 @@ class _LocationPageState extends State<LocationPage> {
                     ),
                     SizedBox(height: 30), // Espacement sous le logo
                     Text(
-                      'Localiser une de nos agences ',
+                      'Localiser une de nos agences',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 20,
@@ -73,6 +113,67 @@ class _LocationPageState extends State<LocationPage> {
           ],
         ),
       ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // Affichage de l'en-tête
+            SliverToBoxAdapter(
+              child: SizedBox(height: 340, child: _head()), // Hauteur de l'en-tête
+            ),
+            // Affichage de la carte
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.5, // 50% de la hauteur de l'écran
+                child: FlutterMap(
+                  mapController: _mapController, // Passer le MapController ici
+                  options: MapOptions(
+                    // Retirer 'center' et 'zoom' ici, car il faut gérer ça avec le MapController
+                    // Ces propriétés ne sont plus directement disponibles dans la MapOptions
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    ),
+                    MarkerLayer(
+                      markers: [
+                        // Marqueur pour la position actuelle
+                        Marker(
+                          point: _currentLocation, // Position actuelle de l'utilisateur
+                          width: 40, // Largeur de l'icône
+                          height: 40, // Hauteur de l'icône
+                          child: Icon(
+                            Icons.location_pin,
+                            color: Colors.red,
+                            size: 40,
+                          ),
+                        ),
+                        // Marqueurs pour les positions supplémentaires
+                        for (var location in _additionalLocations)
+                          Marker(
+                            point: location, // Chaque point de la liste des coordonnées supplémentaires
+                            width: 30, // Largeur de l'icône
+                            height: 30, // Hauteur de l'icône
+                            child: Icon(
+                              Icons.location_on,
+                              color: Colors.blue,
+                              size: 30,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
