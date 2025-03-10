@@ -96,7 +96,7 @@ class _LocationPageState extends State<LocationPage> {
                       width: 560,
                       fit: BoxFit.cover,
                     ),
-                    SizedBox(height: 30), // Espacement sous le logo
+                    SizedBox(height: 15), // Ajuster l'espacement sous le logo
                     Text(
                       'Localiser une de nos agences',
                       style: TextStyle(
@@ -124,7 +124,7 @@ class _LocationPageState extends State<LocationPage> {
           slivers: [
             // Affichage de l'en-tête
             SliverToBoxAdapter(
-              child: SizedBox(height: 340, child: _head()), // Hauteur de l'en-tête
+              child: _head(), // Utilisation de _head sans hauteur spécifique ici
             ),
             // Affichage de la carte
             SliverToBoxAdapter(
@@ -176,5 +176,4 @@ class _LocationPageState extends State<LocationPage> {
       ),
     );
   }
-
 }

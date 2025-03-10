@@ -67,19 +67,19 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
         // Traiter la réponse selon le code de statut
         if (responseData['status'] == '1') {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Erreur 1: Le mot de passe actuel est incorrect")),
+            SnackBar(content: Text(" Le mot de passe actuel est incorrect")),
           );
         } else if (responseData['status'] == '2') {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Erreur 2: Autre erreur, vérifie tes informations")),
+            SnackBar(content: Text(" Autre erreur, vérifie tes informations")),
           );
         } else if (responseData['status'] == '4') {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Erreur 4: Tous les champs doivent être remplis")),
+            SnackBar(content: Text(" Tous les champs doivent être remplis")),
           );
         } else if (responseData['status'] == '3') {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Erreur 3: Les mots de passe ne correspondent pas")),
+            SnackBar(content: Text(" Les mots de passe ne correspondent pas")),
           );
         } else if (responseData['status'] == '0') {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -126,7 +126,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
               ),
             ),
 
-            SizedBox(height: 50),
+            SizedBox(height: 30),
             TextField(
               controller: _oldPasswordController,
               obscureText: true, // Masquer le texte pour le mot de passe
@@ -149,7 +149,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
               ),
               style: TextStyle(color: Colors.black),
             ),
-            SizedBox(height: 50),
+            SizedBox(height: 40),
             TextField(
               controller: _newPasswordController,
               obscureText: true, // Masquer le texte pour le mot de passe
@@ -172,7 +172,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
               ),
               style: TextStyle(color: Colors.black),
             ),
-            SizedBox(height: 50),
+            SizedBox(height: 40),
             TextField(
               controller: _confirmPasswordController,
               obscureText: true, // Masquer le texte pour le mot de passe
@@ -195,22 +195,22 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
               ),
               style: TextStyle(color: Colors.black),
             ),
-            SizedBox(height: 50),
+            SizedBox(height: 40),
             Center(
               child: ElevatedButton(
                 onPressed: _updatePassword, // Appel de la fonction pour envoyer la requête
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange, // Définir la couleur du bouton
-                  padding: EdgeInsets.symmetric(horizontal: 170, vertical: 20), // Augmenter la taille du bouton
+                  padding: EdgeInsets.symmetric(horizontal: 150, vertical: 7), // Augmenter la taille du bouton
                   textStyle: TextStyle(
                     fontSize: 18, // Augmenter la taille du texte
                   ),
                 ),
                 child: Text(
-                  'Envoyer',
+                  'Modifier',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18, // Augmenter la taille du texte
+                    fontSize: 17, // Augmenter la taille du texte
                   ),
                 ),
               ),

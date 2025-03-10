@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/widgets/Screen/payementformpage.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class WalletPage extends StatefulWidget {
   const WalletPage({super.key, required this.title});
@@ -17,6 +15,9 @@ class _WalletPageState extends State<WalletPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
   String qrText = "Scanner pour envoyer"; // Texte par défaut avant le scan
+
+  // Définir la valeur à comparer
+  final String expectedQRCode = "123456"; // Le QR Code attendu
 
   // Afficher le scanner QR
   void _showQRScanner(BuildContext context) {
@@ -52,64 +53,27 @@ class _WalletPageState extends State<WalletPage> {
     controller.scannedDataStream.listen((scanData) {
       if (scanData.code != null) {
         setState(() {
-          qrText = scanData.code!;  // Mettre à jour qrText avec le code scanné
+          qrText = scanData.code!;
         });
         print('QR Code scanné: $qrText');  // Debug info
 
-        // Vérifier le QR Code via l'API
-        _verifyQRCode(qrText);
-      }
-    });
-  }
-
-  Future<void> _verifyQRCode(String qrCode) async {
-    final url = Uri.parse('http://api.credit-fef.com/mobile/VerificationMobilePage.php?num_cpte=$qrCode');
-
-    try {
-      final response = await http.get(url).timeout(Duration(seconds: 10)); // Timeout de 10 secondes
-
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-
-        // Vérifier si le résultat retourné par l'API est "1" pour un code valide
-        if (responseData['result'] == '1') {
-          // Si le QR Code est valide, naviguer vers la page de paiement
-          Future.delayed(Duration(milliseconds: 300), () {
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context); // Fermer le dialogue
-            }
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => PaymentFormPage()), // Page de succès
-            );
-          });
-        } else {
-          // Si le QR Code est invalide, afficher un message d'erreur
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('QR Code invalide. Veuillez réessayer.')),
+        // Comparer le QR Code scanné avec la valeur attendue
+        if (qrText == expectedQRCode) {
+          // Si le QR Code correspond, naviguer vers une nouvelle page
+          Navigator.pop(context); // Fermer le dialogue
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => PaymentFormPage()), // Page de succès
           );
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context); // Fermer le dialogue
-          }
-        }
-      } else {
-        // Si le serveur retourne un code autre que 200, afficher une erreur
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur lors de la vérification du QR Code. Code de statut: ${response.statusCode}')),
-        );
-        if (Navigator.canPop(context)) {
+        } else {
+          // Si le QR Code ne correspond pas, afficher un message d'erreur
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Code QR invalide. Veuillez réessayer.')),
+          );
           Navigator.pop(context); // Fermer le dialogue
         }
       }
-    } catch (e) {
-      // Si une exception se produit (par exemple, problème de connexion)
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur de connexion. Veuillez vérifier votre connexion Internet.')),
-      );
-      if (Navigator.canPop(context)) {
-        Navigator.pop(context); // Fermer le dialogue
-      }
-    }
+    });
   }
 
   @override
@@ -175,35 +139,32 @@ class _WalletPageState extends State<WalletPage> {
               child: _head(), // Affichage de l'en-tête avec le logo et le titre
             ),
             SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 130, vertical: 80), // Ajout d'un espace entre l'en-tête et le bouton
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end, // Aligner les enfants du Column vers le bas
-                  children: [
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _showQRScanner(context); // Ouvrir le scanner QR
-                        },
-                        child: Text("Scanner le QR Code"),
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.orange,
-                          textStyle: TextStyle(
-                            fontSize: 17, // Augmenter la taille du texte
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end, // Aligner les enfants du Column vers le bas
+                children: [
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _showQRScanner(context); // Ouvrir le scanner QR
+                      },
+                      child: Text("Scanner le QR Code"),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.orange,
                       ),
                     ),
-                    SizedBox(height: 20), // Espacement sous le bouton pour aérer un peu
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 20), // Espacement sous le bouton pour aérer un peu
+                ],
               ),
             ),
+
           ],
         ),
       ),
     );
   }
 }
+
+
+
