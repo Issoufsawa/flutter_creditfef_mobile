@@ -13,94 +13,86 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // Clé de validation du formulaire
+  bool _isOldPasswordVisible = false;
+  bool _isNewPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+
   // Fonction pour vérifier et changer le mot de passe via l'API
   Future<void> _updatePassword() async {
-    String oldPassword = _oldPasswordController.text.trim();
-    String newPassword = _newPasswordController.text.trim();
-    String confirmPassword = _confirmPasswordController.text.trim();
+    // Validation du formulaire avant d'envoyer la requête
+    if (_formKey.currentState?.validate() ?? false) {
+      String oldPassword = _oldPasswordController.text.trim();
+      String newPassword = _newPasswordController.text.trim();
+      String confirmPassword = _confirmPasswordController.text.trim();
 
-    // Récupérer le numéro de compte stocké dans SharedPreferences
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? accountNumber = prefs.getString('num_cpte'); // Numéro de compte
+      // Récupérer le numéro de compte stocké dans SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accountNumber = prefs.getString('num_cpte'); // Numéro de compte
 
-    // Affichage des valeurs des champs pour débogage
-    print("Ancien mot de passe: '$oldPassword'");
-    print("Nouveau mot de passe: '$newPassword'");
-    print("Confirmer le mot de passe: '$confirmPassword'");
-    print("Numéro de compte: '$accountNumber'");
+      // Affichage des valeurs des champs pour débogage
+      print("Ancien mot de passe: '$oldPassword'");
+      print("Nouveau mot de passe: '$newPassword'");
+      print("Confirmer le mot de passe: '$confirmPassword'");
+      print("Numéro de compte: '$accountNumber'");
 
-    // Validation pour s'assurer que les champs ne sont pas vides
-    if (oldPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty || accountNumber == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erreur 4: Veuillez remplir tous les champs")),
-      );
-      return;
-    }
+      // Corps de la requête
+      final Map<String, String> requestBody = {
+        'old_password': oldPassword,
+        'new_password': newPassword,
+        'confirm_password': confirmPassword,
+        'account_number': accountNumber ?? "", // Ajouter le numéro de compte dans la requête
+      };
 
-    // Vérifier que les mots de passe correspondent
-    if (newPassword != confirmPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erreur 3: Les mots de passe ne correspondent pas")),
-      );
-      return;
-    }
+      try {
+        // Envoi de la requête POST avec requestBody
+        final response = await http.post(
+          Uri.parse('http://api.credit-fef.com/mobile/UpdatePasseMobilePage.php'),
+          body: requestBody,  // Utiliser requestBody ici
+        );
 
-    // URL de l'API
-    final url = Uri.parse('http://api.credit-fef.com/mobile/UpdatePasseMobilePage.php');
+        if (response.statusCode == 200) {
+          // Vérifier si la réponse contient du JSON
+          var responseData = json.decode(response.body);
 
-    // Corps de la requête
-    final Map<String, String> requestBody = {
-      'old_password': oldPassword,
-      'new_password': newPassword,
-      'confirm_password': confirmPassword,
-      'account_number': accountNumber, // Ajouter le numéro de compte dans la requête
-    };
-
-    try {
-      // Envoi de la requête POST
-      final response = await http.post(url, body: requestBody);
-
-      if (response.statusCode == 200) {
-        // Vérifier si la réponse contient du JSON
-        var responseData = json.decode(response.body);
-
-        // Traiter la réponse selon le code de statut
-        if (responseData['status'] == '1') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(" Le mot de passe actuel est incorrect")),
-          );
-        } else if (responseData['status'] == '2') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(" Autre erreur, vérifie tes informations")),
-          );
-        } else if (responseData['status'] == '4') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(" Tous les champs doivent être remplis")),
-          );
-        } else if (responseData['status'] == '3') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(" Les mots de passe ne correspondent pas")),
-          );
-        } else if (responseData['status'] == '0') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Mot de passe modifié avec succès")),
-          );
+          // Traiter la réponse selon le code de statut
+          if (responseData['status'] == '1') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Le mot de passe actuel est incorrect")),
+            );
+          } else if (responseData['status'] == '2') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Autre erreur, vérifie tes informations")),
+            );
+          } else if (responseData['status'] == '4') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Tous les champs doivent être remplis")),
+            );
+          } else if (responseData['status'] == '3') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Les mots de passe ne correspondent pas")),
+            );
+          } else if (responseData['status'] == '0') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Mot de passe modifié avec succès")),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Erreur inconnue")),
+            );
+          }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Erreur inconnue")),
+            SnackBar(content: Text("Erreur de communication avec le serveur")),
           );
         }
-      } else {
+      } catch (e) {
+        // Si une erreur se produit, par exemple un problème de réseau
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Erreur de communication avec le serveur")),
+          SnackBar(content: Text("Une erreur s'est produite")),
         );
+        print("Erreur: $e");
       }
-    } catch (e) {
-      // Si une erreur se produit, par exemple un problème de réseau
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Une erreur s'est produite")),
-      );
-      print("Erreur: $e");
     }
   }
 
@@ -113,110 +105,145 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Text(
-                'Modifier le mot de passe',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-
-            SizedBox(height: 30),
-            TextField(
-              controller: _oldPasswordController,
-              obscureText: true, // Masquer le texte pour le mot de passe
-              decoration: InputDecoration(
-                labelText: 'Ancien mot de passe',
-                labelStyle: TextStyle(color: Color(0xff0c355f)),
-                border: OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(0xff0c355f),
-                    width: 2.0,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(0xff0c355f),
-                    width: 2.0,
-                  ),
-                ),
-              ),
-              style: TextStyle(color: Colors.black),
-            ),
-            SizedBox(height: 40),
-            TextField(
-              controller: _newPasswordController,
-              obscureText: true, // Masquer le texte pour le mot de passe
-              decoration: InputDecoration(
-                labelText: 'Nouveau mot de passe',
-                labelStyle: TextStyle(color: Color(0xff0c355f)),
-                border: OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(0xff0c355f),
-                    width: 2.0,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(0xff0c355f),
-                    width: 2.0,
-                  ),
-                ),
-              ),
-              style: TextStyle(color: Colors.black),
-            ),
-            SizedBox(height: 40),
-            TextField(
-              controller: _confirmPasswordController,
-              obscureText: true, // Masquer le texte pour le mot de passe
-              decoration: InputDecoration(
-                labelText: 'Confirmer le nouveau mot de passe',
-                labelStyle: TextStyle(color: Color(0xff0c355f)),
-                border: OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(0xff0c355f),
-                    width: 2.0,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(0xff0c355f),
-                    width: 2.0,
-                  ),
-                ),
-              ),
-              style: TextStyle(color: Colors.black),
-            ),
-            SizedBox(height: 40),
-            Center(
-              child: ElevatedButton(
-                onPressed: _updatePassword, // Appel de la fonction pour envoyer la requête
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange, // Définir la couleur du bouton
-                  padding: EdgeInsets.symmetric(horizontal: 150, vertical: 7), // Augmenter la taille du bouton
-                  textStyle: TextStyle(
-                    fontSize: 18, // Augmenter la taille du texte
-                  ),
-                ),
+        child: Form(
+          key: _formKey, // Ajout de la clé pour validation
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
                 child: Text(
-                  'Modifier',
+                  'Modifier le mot de passe',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17, // Augmenter la taille du texte
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-            ),
+              SizedBox(height: 30),
 
-          ],
+              // Ancien mot de passe
+              TextFormField(
+                controller: _oldPasswordController,
+                obscureText: !_isOldPasswordVisible,
+                decoration: InputDecoration(
+                  labelText: 'Ancien mot de passe',
+                  labelStyle: TextStyle(color: Color(0xff0c355f)),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xff0c355f)), // Bordure bleue
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isOldPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                      color: Color(0xff0c355f),
+                      size: 20,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isOldPasswordVisible = !_isOldPasswordVisible;
+                      });
+                    },
+                  ),
+                ),
+                style: TextStyle(color: Colors.black),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Veuillez entrer votre ancien mot de passe';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 30),
+
+// Nouveau mot de passe
+              TextFormField(
+                controller: _newPasswordController,
+                obscureText: !_isNewPasswordVisible,
+                decoration: InputDecoration(
+                  labelText: 'Nouveau mot de passe',
+                  labelStyle: TextStyle(color: Color(0xff0c355f)),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xff0c355f)), // Bordure bleue
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isNewPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                      color: Color(0xff0c355f),
+                      size: 20,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isNewPasswordVisible = !_isNewPasswordVisible;
+                      });
+                    },
+                  ),
+                ),
+                style: TextStyle(color: Colors.black),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Veuillez entrer un nouveau mot de passe';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+
+// Confirmer le nouveau mot de passe
+              TextFormField(
+                controller: _confirmPasswordController,
+                obscureText: !_isConfirmPasswordVisible,
+                decoration: InputDecoration(
+                  labelText: 'Confirmer le nouveau mot de passe',
+                  labelStyle: TextStyle(color: Color(0xff0c355f)),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xff0c355f)), // Bordure bleue
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isConfirmPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                      color: Color(0xff0c355f),
+                      size: 20,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                      });
+                    },
+                  ),
+                ),
+                style: TextStyle(color: Colors.black),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Veuillez confirmer le nouveau mot de passe';
+                  }
+                  if (value != _newPasswordController.text) {
+                    return 'Les mots de passe ne correspondent pas';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+
+
+              // Bouton de validation
+              Center(
+                child: ElevatedButton(
+                  onPressed: _updatePassword,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    padding: EdgeInsets.symmetric(horizontal: 130, vertical: 7),
+                    textStyle: TextStyle(fontSize: 18),
+                  ),
+                  child: Text(
+                    'Modifier',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

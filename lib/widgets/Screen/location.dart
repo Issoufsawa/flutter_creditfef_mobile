@@ -18,17 +18,17 @@ class _LocationPageState extends State<LocationPage> {
   late LocationData _locationData; // Contiendra les données de localisation de l'utilisateur
   late MapController _mapController; // Déclarer un MapController
 
-  // Liste des coordonnées supplémentaires à ajouter
+  // Liste des nouvelles coordonnées supplémentaires à ajouter
   final List<LatLng> _additionalLocations = [
-    LatLng(5.403278, -4.006528),
-    LatLng(5.348639, -4.017222),
-    LatLng(5.3449284, -4.0838084),
-    LatLng(5.290778, -3.958556),
-    LatLng(5.300528, -3.976000),
-    LatLng(5.3566104, -3.879401),
-    LatLng(5.3922778, -3.9780833),
-    LatLng(5.4854722, -4.0534444),
-    LatLng(5.3237835, -4.3766238),
+    LatLng(5.403278, -4.006528), // ABOBO DOKUI | 27 24 54 96 98
+    LatLng(5.348639, -4.017222), // ADJAME LIBERTE
+    LatLng(5.3449284, -4.0838084), // YOPOUGON
+    LatLng(5.290778, -3.958556), // KOUMASSI GRAND MARCHE
+    LatLng(5.300528, -3.976000), // MARCORY GRAND MARCHE
+    LatLng(5.3566104, -3.879401), // BINGERVILLE non loin du lycée Moderne "le Conquérant"
+    LatLng(5.3922778, -3.9780833), // COCODY ANGRE 8 EME TRANCHE
+    LatLng(5.4854722, -4.0534444), // ANYAMA
+    LatLng(5.3237835, -4.3766238), // DABOU gare de taxi
   ];
 
   @override
@@ -153,7 +153,7 @@ class _LocationPageState extends State<LocationPage> {
                             size: 40,
                           ),
                         ),
-                        // Marqueurs pour les positions supplémentaires
+                        // Marqueurs pour les nouvelles positions supplémentaires
                         for (var location in _additionalLocations)
                           Marker(
                             point: location, // Chaque point de la liste des coordonnées supplémentaires

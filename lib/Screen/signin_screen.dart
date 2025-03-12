@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Screen/signup_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../theme/theme.dart';
 import '../widgets/bottomnavigationbar.dart';
 import '../widgets/custom_scaffold.dart';
 
@@ -20,39 +17,34 @@ class _SignInScreenState extends State<SignInScreen> {
   TextEditingController numero = TextEditingController();
   TextEditingController password = TextEditingController();
   bool rememberPassword = true;
+  bool _isPasswordVisible = false; // To track visibility of the password
 
-  // Fonction pour gérer la connexion
+  // Function to handle login
   Future<void> _signIn(data) async {
-    // Vérifiez si le formulaire est valide
     if (_formSignInKey.currentState!.validate()) {
       if (!rememberPassword) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-              "Veuillez accepter le traitement des données personnelles",
-            ),
+            content: Text("Veuillez accepter le traitement des données personnelles"),
           ),
         );
         return;
       }
 
-      // Envoi de la requête HTTP pour vérifier les informations de connexion
       try {
+        final response = await http.post(Uri.parse('https://api.credit-fef.com/mobile/loginMobilePage.php?action=connexion-user'), body: data);
+        var responseData = jsonDecode(response.body);
 
-final response = await http.post(Uri.parse('https://api.credit-fef.com/mobile/loginMobilePage.php?action=connexion-user'),body:data);
-var responseData = jsonDecode(response.body);
-print(responseData);
+        if (responseData is List && responseData.isNotEmpty) {
+          responseData = responseData[0];
+        }
 
-if (responseData is List && responseData.isNotEmpty) {
-  responseData = responseData[0];
-}
+        // Check for login failure
+        if (responseData == "1" || responseData == "2") {
+          print("Identifiants incorrects");
+          return;
+        }
 
-// Vérifier si la connexion a échoué
-if (responseData == "1" || responseData == "2") {
-  ///Fluttertoast.showToast(msg: "Identifiants incorrects");
-  print("Identifiants incorrects");
- // return "Error";
-}
         String nom = responseData['nom_cli'] ?? '';
         String contact = responseData['contact_cli'] ?? '';
         String num_cpte = responseData['num_cpte_cli'] ?? '';
@@ -60,7 +52,7 @@ if (responseData == "1" || responseData == "2") {
         String solde = responseData['solde_cpte_cli'] ?? '';
         String agence = responseData['agence'] ?? '';
 
-        // Stocker les données dans SharedPreferences
+        // Save data to SharedPreferences
         SharedPreferences localStorage = await SharedPreferences.getInstance();
         await localStorage.setString('nom', nom);
         await localStorage.setString('contact', contact);
@@ -69,22 +61,16 @@ if (responseData == "1" || responseData == "2") {
         await localStorage.setString('solde', solde);
         await localStorage.setString('agence', agence);
 
-
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder:
-                (context) =>
-            const Bottom(), // Remplacez par votre page d'accueil
+            builder: (context) => const Bottom(),
           ),
         );
 
-
       } catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Erreur: $e')));
-        print("content: Text('Erreur: $e')");
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur: $e')));
+        print("Erreur: $e");
       }
     }
   }
@@ -100,7 +86,7 @@ if (responseData == "1" || responseData == "2") {
             child: Container(
               padding: const EdgeInsets.fromLTRB(25.0, 50.0, 25.0, 20.0),
               decoration: const BoxDecoration(
-                color: Color(0xff0c355f),// Background set to blue
+                color: Color(0xff0c355f),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(40.0),
                   topRight: Radius.circular(40.0),
@@ -117,7 +103,7 @@ if (responseData == "1" || responseData == "2") {
                         style: TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.w900,
-                          color: Colors.white, // Change text color to white
+                          color: Colors.white,
                         ),
                       ),
                       const SizedBox(height: 20.0),
@@ -129,35 +115,40 @@ if (responseData == "1" || responseData == "2") {
                           return null;
                         },
                         controller: numero,
-                        style: const TextStyle(color: Colors.white), // Définir la couleur du texte à blanc
+                        style: const TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           label: const Text(
                             'Numéro de compte',
                             style: TextStyle(
-                              color: Colors.white, // Change label color to white
+                              color: Colors.white,
                             ),
                           ),
                           hintText: 'Entrez le numéro de compte',
-                          hintStyle: const TextStyle(color: Colors.white), // Lighter white for hints
+                          hintStyle: const TextStyle(color: Colors.white),
                           border: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white), // White border color
+                            borderSide: const BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white), // White border color when focused
+                            borderSide: const BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white), // White border color when enabled
+                            borderSide: const BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(10),
+                          ),
+                          suffixIcon: Icon(
+                            Icons.book, // Replace this with the icon you prefer
+                            color: Colors.white,
+                            size: 20,
                           ),
                         ),
                       ),
 
-                      const SizedBox(height: 20.0),
 
+                      const SizedBox(height: 20.0),
                       TextFormField(
-                        obscureText: true,
+                        obscureText: !_isPasswordVisible, // Toggle visibility
                         obscuringCharacter: '*',
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -166,32 +157,42 @@ if (responseData == "1" || responseData == "2") {
                           return null;
                         },
                         controller: password,
-                        style: const TextStyle(color: Colors.white), // Définir la couleur du texte à blanc
+                        style: const TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           label: const Text(
                             'Mot de passe',
                             style: TextStyle(
-                              color: Colors.white, // Change label color to white
+                              color: Colors.white,
                             ),
                           ),
                           hintText: 'Entrez le mot de passe',
-                          hintStyle: const TextStyle(color: Colors.white), // Lighter white for hints
+                          hintStyle: const TextStyle(color: Colors.white),
                           border: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white), // White border color
+                            borderSide: const BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white), // White border color when focused
+                            borderSide: const BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white), // White border color when enabled
+                            borderSide: const BorderSide(color: Colors.white),
                             borderRadius: BorderRadius.circular(10),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
                           ),
                         ),
                       ),
-
-
                       const SizedBox(height: 20.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -200,9 +201,9 @@ if (responseData == "1" || responseData == "2") {
                             children: [
                               Theme(
                                 data: ThemeData(
-                                  unselectedWidgetColor: Colors.white, // Color of the checkbox border
+                                  unselectedWidgetColor: Colors.white,
                                   checkboxTheme: CheckboxThemeData(
-                                    side: BorderSide(color: Colors.white), // Set border color to white
+                                    side: BorderSide(color: Colors.white),
                                   ),
                                 ),
                                 child: Checkbox(
@@ -212,27 +213,14 @@ if (responseData == "1" || responseData == "2") {
                                       rememberPassword = value!;
                                     });
                                   },
-                                  activeColor: Colors.orange, // Checkbox color when checked (orange)
+                                  activeColor: Colors.orange,
                                 ),
                               ),
                               const Text(
                                 'Souviens-toi de moi',
-                                style: TextStyle(
-                                    fontSize: 10.0,
-                                    color: Colors.white), // Light white color for text
+                                style: TextStyle(fontSize: 20.0, color: Colors.white),
                               ),
                             ],
-
-                          ),
-                          GestureDetector(
-                            child: Text(
-                              'Mot de passe oublié?',
-                              style: TextStyle(
-                                fontSize: 10.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white, // Change color to white
-                              ),
-                            ),
                           ),
                         ],
                       ),
@@ -240,57 +228,26 @@ if (responseData == "1" || responseData == "2") {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: (){
-                        var data = {
-                         'numero': numero.text,
-                          'mdp': password.text,
-                        };
-                        print(data);
-                        _signIn(data);
-                        }
-                          , // Appeler la fonction de connexion
+                          onPressed: () {
+                            var data = {
+                              'numero': numero.text,
+                              'mdp': password.text,
+                            };
+                            print(data);
+                            _signIn(data);
+                          },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orange, // Or use this Color(0xFFFFA500) for a specific shade
-
+                            backgroundColor: Colors.orange,
                           ),
                           child: const Text(
                             'Se connecter',
                             style: TextStyle(
                               fontSize: 20.0,
-                              fontWeight: FontWeight.bold, // Mettre le texte en gras
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-
                         ),
                       ),
-                      const SizedBox(height: 20.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Vous n\'avez pas de compte ?',
-                            style: TextStyle(color: Colors.white), // Light white color for text
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (e) => const SignUpScreen(),
-                                ),
-                              );
-                            },
-                            child: Text(
-                              'S\'inscrire',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white, // Change color to white
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20.0),
                     ],
                   ),
                 ),
