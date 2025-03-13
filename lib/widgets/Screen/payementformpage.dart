@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // Pour décoder la réponse JSON
+import 'package:shared_preferences/shared_preferences.dart'; // Importer SharedPreferences
 
 class PaymentFormPage extends StatefulWidget {
+  final String qrCode; // Déclarez qrCode ici
+
+  // Le constructeur prend un paramètre qrCode
+  const PaymentFormPage({Key? key, required this.qrCode}) : super(key: key);
+
   @override
   _PaymentFormPageState createState() => _PaymentFormPageState();
 }
@@ -10,9 +16,29 @@ class PaymentFormPage extends StatefulWidget {
 class _PaymentFormPageState extends State<PaymentFormPage> {
   final TextEditingController _amountSentController = TextEditingController();
   final TextEditingController _amountReceivedController = TextEditingController();
+  String? _accountNumber; // Variable pour stocker le numéro de compte
+  bool _isLoading = false; // Variable pour gérer l'état de chargement
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAccountNumber(); // Charger le numéro de compte dès le début
+  }
+
+  // Charger le numéro de compte depuis SharedPreferences
+  Future<void> _loadAccountNumber() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _accountNumber = prefs.getString('num_cpte'); // Récupérer le numéro de compte
+    });
+  }
 
   // Méthode pour effectuer un paiement
   Future<void> _makePayment() async {
+    setState(() {
+      _isLoading = true; // Début du chargement
+    });
+
     final String apiUrl = 'http://api.credit-fef.com/mobile/operationDepotMobilePage.php';
 
     // Récupérer les valeurs des champs du formulaire
@@ -24,6 +50,9 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Veuillez remplir tous les champs.')),
       );
+      setState(() {
+        _isLoading = false; // Fin du chargement
+      });
       return;
     }
 
@@ -32,10 +61,15 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
       final response = await http.post(
         Uri.parse(apiUrl),
         body: {
-          'montant_envoye': amountSent,  // Le montant envoyé
-          'montant_recu': amountReceived, // Le montant reçu
+          'num_cpte': amountSent,  // Le montant envoyé
+          'montant_solde': amountReceived, // Le montant reçu
+          'beneficiere': widget.qrCode,  // Passer le qrCode lors du paiement
         },
       );
+
+      setState(() {
+        _isLoading = false; // Fin du chargement
+      });
 
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
@@ -47,10 +81,22 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
             SnackBar(content: Text('Paiement effectué avec succès !')),
           );
 
-          // Retourner à la page précédente (WalletPage)
-          Navigator.popUntil(context, ModalRoute.withName('/wallet_page')); // Retour explicite à WalletPage
+          Future.delayed(Duration(milliseconds: 500), () {
+            Navigator.popUntil(context, ModalRoute.withName('/wallet_page'));
+          });
+
+        } else if (data['status'] == '2') {
+          // Si le solde est insuffisant
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Solde insuffisant.')),
+          );
+        } else if (data['status'] == '3') {
+          // Si un paramètre est manquant
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Paramètre manquant.')),
+          );
         } else {
-          // En cas d'échec du paiement
+          // En cas d'échec général
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Échec du paiement. Veuillez réessayer.')),
           );
@@ -61,8 +107,11 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
     } catch (e) {
       print('Erreur lors de l\'appel à l\'API : $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Une erreur est survenue.')),
+        SnackBar(content: Text('Une erreur est survenue : $e')),
       );
+      setState(() {
+        _isLoading = false; // Fin du chargement
+      });
     }
   }
 
@@ -83,21 +132,28 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
+
+            // Afficher le numéro de compte s'il est disponible
+            _accountNumber != null
+                ? Text(
+              'Numéro de compte: $_accountNumber',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            )
+                : CircularProgressIndicator(), // Afficher un loader si le numéro de compte est en cours de chargement
+
+            SizedBox(height: 20),
             TextField(
               controller: _amountSentController,
               decoration: InputDecoration(labelText: 'Montant Envoyé'),
               keyboardType: TextInputType.number,
             ),
-            TextField(
-              controller: _amountReceivedController,
-              decoration: InputDecoration(labelText: 'Montant Reçu'),
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 20),
+
             Center(  // Centrer le bouton
               child: ElevatedButton(
-                onPressed: _makePayment,  // Appeler la méthode pour effectuer le paiement
-                child: Text('Envoyer'),
+                onPressed: _isLoading ? null : _makePayment,  // Désactive le bouton pendant le chargement
+                child: _isLoading
+                    ? CircularProgressIndicator()  // Afficher un indicateur de chargement au lieu du texte pendant le traitement
+                    : Text('Envoyer'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange, // Couleur de fond
                 ),

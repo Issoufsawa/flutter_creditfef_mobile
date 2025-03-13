@@ -80,14 +80,18 @@ class _WalletPageState extends State<WalletPage> {
 
         // Si le QR Code est valide, naviguer vers la page de paiement
         if (isValid) {
-          // Add a delay here to ensure the widget finishes building
+          // Ajoutez un délai pour que le widget ait le temps de se construire
           await Future.delayed(Duration(milliseconds: 200));
 
-          if (!mounted) return;  // Recheck if the widget is mounted before navigating
+          if (!mounted) return;  // Vérifiez si le widget est toujours monté avant de naviguer
           Navigator.pop(context); // Fermer le dialogue
+
+          // Passer le QR code à la page de paiement
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => PaymentFormPage()), // Page de succès
+            MaterialPageRoute(
+              builder: (context) => PaymentFormPage(qrCode: qrText), // Passer le QR code
+            ),
           );
         } else {
           // Si le QR Code est invalide, afficher un message d'erreur
@@ -99,7 +103,6 @@ class _WalletPageState extends State<WalletPage> {
       }
     });
   }
-
 
   Future<bool> _callApi(String qrCode) async {
     final String apiUrl = 'http://api.credit-fef.com/mobile/VerificationMobilePage.php?num_cpte=$qrCode';
