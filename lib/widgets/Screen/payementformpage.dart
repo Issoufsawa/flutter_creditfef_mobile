@@ -42,11 +42,10 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
     final String apiUrl = 'http://api.credit-fef.com/mobile/operationDepotMobilePage.php';
 
     // Récupérer les valeurs des champs du formulaire
-    final String amountSent = _amountSentController.text;
     final String amountReceived = _amountReceivedController.text;
 
     // Vérifier que les champs ne sont pas vides
-    if (amountSent.isEmpty || amountReceived.isEmpty) {
+    if (amountReceived.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Veuillez remplir tous les champs.')),
       );
@@ -56,49 +55,65 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
       return;
     }
 
+    if (_accountNumber == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Numéro de compte non trouvé dans les préférences.')),
+      );
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
+
     try {
       // Faire la requête HTTP POST à l'API
       final response = await http.post(
         Uri.parse(apiUrl),
         body: {
-          'num_cpte': amountSent,  // Le montant envoyé
           'montant_solde': amountReceived, // Le montant reçu
-          'beneficiere': widget.qrCode,  // Passer le qrCode lors du paiement
+          'beneficiaire': widget.qrCode,  // Passer le qrCode lors du paiement
+          'num_cpte': _accountNumber ?? "",  // Le numéro de compte venant des SharedPreferences
         },
       );
+
+      // Affichage des données envoyées pour débogage
+      print("Données envoyées : ");
+      print("Montant envoyé: $amountReceived");
+      print("QRCode: ${widget.qrCode}");
+      print("Numéro de compte: $_accountNumber");
+
+      // Afficher la réponse brute de l'API
+      print('Réponse brute de l\'API: ${response.body}');
 
       setState(() {
         _isLoading = false; // Fin du chargement
       });
 
       if (response.statusCode == 200) {
-        var data = json.decode(response.body);
+        // Si la réponse est une chaîne comme "3" ou "success"
+        var data = response.body;  // La réponse est une chaîne (ex : "3")
         print('Réponse de l\'API : $data');
 
-        // Si la réponse indique que le paiement est réussi
-        if (data['status'] == 'success') {
+        // Vérifier si la réponse est "3"
+        if (data == "3") {
+          // Paramètre manquant ou erreur côté serveur
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Paramètre manquant ou erreur côté serveur.')),
+          );
+        } else if (data == "success") {
+          // Paiement réussi
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Paiement effectué avec succès !')),
           );
 
-          Future.delayed(Duration(milliseconds: 500), () {
+          // Naviguer après une petite pause
+          WidgetsBinding.instance.addPostFrameCallback((_) {
             Navigator.popUntil(context, ModalRoute.withName('/wallet_page'));
           });
-
-        } else if (data['status'] == '2') {
-          // Si le solde est insuffisant
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Solde insuffisant.')),
-          );
-        } else if (data['status'] == '3') {
-          // Si un paramètre est manquant
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Paramètre manquant.')),
-          );
         } else {
-          // En cas d'échec général
+          // Autres codes de statut
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Échec du paiement. Veuillez réessayer.')),
+            SnackBar(content: Text('Échec du paiement. Code de statut : $data')),
           );
         }
       } else {
@@ -114,6 +129,8 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
       });
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -131,22 +148,17 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
               'Envoyer de l\'argent',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
-
-            // Afficher le numéro de compte s'il est disponible
-            _accountNumber != null
-                ? Text(
-              'Numéro de compte: $_accountNumber',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            )
-                : CircularProgressIndicator(), // Afficher un loader si le numéro de compte est en cours de chargement
 
             SizedBox(height: 20),
+
+            // Champ pour le montant reçu
             TextField(
-              controller: _amountSentController,
-              decoration: InputDecoration(labelText: 'Montant Envoyé'),
+              controller: _amountReceivedController,
+              decoration: InputDecoration(labelText: 'Montant Reçu'),
               keyboardType: TextInputType.number,
             ),
+
+            SizedBox(height: 20),
 
             Center(  // Centrer le bouton
               child: ElevatedButton(
