@@ -36,8 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _solde = prefs.getString('solde') ?? 'Solde non défini';
     });
 
-    _getUserNameFromApi(_num_cpte);
-    _getUserNameFromApi(_solde);
+    await _getUserNameFromApi(_num_cpte);
   }
 
   Future<void> _getUserNameFromApi(String num_cpte) async {
@@ -45,17 +44,23 @@ class _MyHomePageState extends State<MyHomePage> {
       Uri.parse('http://api.credit-fef.com/mobile/listeMobilePage.php?num_cpte=$num_cpte'),
     );
 
-    final data = json.decode(response.body);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
 
-    if (data is List) {
-      setState(() {
-        historiqueTransactions = List<Map<String, dynamic>>.from(data);
-
-      });
+      if (data is List) {
+        setState(() {
+          historiqueTransactions = List<Map<String, dynamic>>.from(data);
+        });
+      } else {
+        setState(() {
+          _num_cpte = 'Erreur de format de données';
+          _solde = 'Erreur de format de données';
+        });
+      }
     } else {
       setState(() {
-        _num_cpte = 'Erreur de format de données';
-        _solde = 'Erreur de format de données';
+        _num_cpte = 'Erreur de connexion';
+        _solde = 'Erreur de connexion';
       });
     }
   }
@@ -105,81 +110,69 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                  if (index >= historiqueTransactions.length) return null;
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  children: List.generate(
+                    historiqueTransactions.length > 5 ? 5 : historiqueTransactions.length,
+                        (index) {
+                      var transaction = historiqueTransactions[index];
+                      Color montantColor = Colors.green;
+                      String montantPrefix = '';
 
-                  var transaction = historiqueTransactions[index];
+                      if (transaction['type_mvt'] == 'OPERATION DE RETRAIT' || transaction['type_mvt'] == 'FRAIS D\'ENTRETIEN DE COMPTE') {
+                        montantColor = Colors.red;
+                        montantPrefix = '-';
+                      }
 
-                  Color montantColor = Colors.green;
-                  String montantPrefix = '';
-
-                  // Si la transaction est un retrait ou un frais d'entretien, on applique une couleur rouge
-                  if (transaction['type_mvt'] == 'OPERATION DE RETRAIT' || transaction['type_mvt'] == 'FRAIS D\'ENTRETIEN DE COMPTE') {
-                    montantColor = Colors.red;
-                    montantPrefix = '-';
-                  }
-
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2.0),
-                    child: InkWell(
-                      onTap: () {
-                        // Naviguer vers la page de détails en passant la transaction comme paramètre
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TransactionDetailsPage(transaction: transaction),
-                          ),
-                        );
-                      },
-                      child: Card(
-                        elevation: 5, // Ombre sous la Card pour un effet de profondeur
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15), // Bords arrondis de la Card
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0), // Espacement à l'intérieur de la Card
-                          child: ListTile(
-                            contentPadding: EdgeInsets.zero, // Supprime les marges par défaut
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '${transaction['type_mvt']}',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.w600
-                                  ),
-                                ),
-                                Text(
-                                  '${transaction['createdat']}',
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.black
-                                  ),
-                                ),
-                              ],
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2.0),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TransactionDetailsPage(transaction: transaction),
+                              ),
+                            );
+                          },
+                          child: Card(
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            trailing: Text(
-                              '$montantPrefix${transaction['mtnt_dep_mvt']} \FCFA',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                                color: montantColor,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${transaction['type_mvt']}',
+                                      style: TextStyle(fontSize: 16, color: Colors.blue, fontWeight: FontWeight.w600),
+                                    ),
+                                    Text(
+                                      '${transaction['createdat']}',
+                                      style: TextStyle(fontSize: 15, color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                                trailing: Text(
+                                  '$montantPrefix${transaction['mtnt_dep_mvt']} \FCFA',
+                                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: montantColor),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                  );
-                },
-                childCount: historiqueTransactions.length > 5 ? 5 : historiqueTransactions.length, // Limiter à 6 transactions
+                      );
+                    },
+                  ),
+                ),
               ),
-            )
-
+            ),
           ],
         ),
       ),
@@ -207,7 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Colors.black26,
                 blurRadius: 10,
                 offset: Offset(0, 5),
-              )
+              ),
             ],
           ),
           child: Padding(
@@ -215,17 +208,9 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      'Crédit fef',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 20,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+                Text(
+                  'Crédit fef',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20, color: Colors.white),
                 ),
               ],
             ),
@@ -258,11 +243,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     children: [
                       Text(
                         'COMPTE COURANT SOCIAL (C COS)',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.white),
                       ),
                     ],
                   ),
@@ -274,11 +255,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     children: [
                       Text(
                         _num_cpte,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Colors.white,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
                       ),
                     ],
                   ),
@@ -294,20 +271,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           CircleAvatar(
                             radius: 13,
                             backgroundColor: Color(0xff0c355f),
-                            child: Icon(
-                              Icons.arrow_downward,
-                              color: Colors.white,
-                              size: 19,
-                            ),
+                            child: Icon(Icons.arrow_downward, color: Colors.white, size: 19),
                           ),
                           SizedBox(width: 7),
                           Text(
                             'Solde',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              color: Color.fromARGB(255, 216, 216, 216),
-                            ),
+                            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Color.fromARGB(255, 216, 216, 216)),
                           ),
                         ],
                       ),
@@ -322,17 +291,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     children: [
                       Text(
                         _isTextVisible ? ' ${_solde} \FCFA' : '********',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 17,
-                          color: Colors.white,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17, color: Colors.white),
                       ),
                       IconButton(
                         icon: Icon(
-                          _isTextVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                          _isTextVisible ? Icons.visibility_off : Icons.visibility,
                           color: Colors.white,
                           size: 20,
                         ),

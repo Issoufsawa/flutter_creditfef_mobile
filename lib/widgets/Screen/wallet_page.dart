@@ -199,7 +199,7 @@ class _WalletPageState extends State<WalletPage> {
                       onPressed: () {
                         _showQRScanner(context); // Ouvrir le scanner QR
                       },
-                      child: Text("Scanner le QR Code"),
+                      child: Text("Scanner pour envoyer de l'argent"),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: Colors.orange,
@@ -241,10 +241,10 @@ class _WalletPageState extends State<WalletPage> {
                         );
                       }
                     },
-                    child: Text("Afficher QR Code"),
+                    child: Text("Recevoir de l'argent"),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Color(0xff0c355f),
                     ),
                   ),
                   SizedBox(height: 20), // Espacement sous le bouton pour aérer un peu
