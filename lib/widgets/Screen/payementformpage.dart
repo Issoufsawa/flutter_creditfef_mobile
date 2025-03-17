@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/widgets/Screen/wallet_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // Pour décoder la réponse JSON
 import 'package:shared_preferences/shared_preferences.dart'; // Importer SharedPreferences
@@ -99,6 +100,11 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
 
         // Vider le champ après l'envoi du paiement
         _amountSentController.clear();  // Vider le champ de texte
+        // Après un paiement réussi, naviguer directement vers WalletPage
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => WalletPage(title: '',)), // Remplacez avec le nom de votre page Wallet
+        );
 
         // Vérifier si la réponse est "3"
         if (data == "3") {
