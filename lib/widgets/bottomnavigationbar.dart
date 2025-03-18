@@ -5,6 +5,7 @@ import '../Screen/home_page.dart';
 import 'Screen/location.dart';
 import 'Screen/profile_page.dart';
 import 'Screen/wallet_page.dart';
+import 'Screen/statistique.dart';
 
 
 
@@ -16,7 +17,7 @@ class Bottom extends StatefulWidget{
 
 class _BottomState extends State<Bottom> {
   int index_color = 0;
-  List Screen = [MyHomePage(title: 'App  mobile') ,WalletPage(title: 'App  mobile'), LocationPage(title: 'App  mobile') ,ProfilePage(title: 'App  mobile')];
+  List Screen = [MyHomePage(title: 'App  mobile') ,WalletPage(title: 'App  mobile'), LocationPage(title: 'App  mobile'),StatistiquePage(title: 'App  mobile'),ProfilePage(title: 'App  mobile')];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,8 +42,6 @@ class _BottomState extends State<Bottom> {
                   color: index_color == 0 ? Color(0xff0c355f): Colors.grey,
                 ),
               ),
-
-
 
               GestureDetector(
                 onTap: () {
@@ -75,9 +74,21 @@ class _BottomState extends State<Bottom> {
                   });
                 },
                 child: Icon(
-                  Icons.person_outlined,
+                  Icons.stacked_bar_chart,
                   size: 30,
                   color: index_color == 3 ? Color(0xff0c355f): Colors.grey,
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    index_color = 4;
+                  });
+                },
+                child: Icon(
+                  Icons.person_outlined,
+                  size: 30,
+                  color: index_color == 4 ? Color(0xff0c355f): Colors.grey,
                 ),
               ),
             ],

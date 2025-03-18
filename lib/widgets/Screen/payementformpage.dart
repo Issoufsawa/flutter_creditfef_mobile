@@ -103,7 +103,7 @@ class _PaymentFormPageState extends State<PaymentFormPage> {
         // Après un paiement réussi, naviguer directement vers WalletPage
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => WalletPage(title: '',)), // Remplacez avec le nom de votre page Wallet
+          MaterialPageRoute(builder: (context) => WalletPage(title: 'App  mobile',)), // Remplacez avec le nom de votre page Wallet
         );
 
         // Vérifier si la réponse est "3"

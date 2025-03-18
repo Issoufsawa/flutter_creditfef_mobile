@@ -1,12 +1,49 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'transactiondetaillepage.dart';  // Assurez-vous d'importer la page de détails
+import 'package:http/http.dart' as http;
+import 'transactiondetaillepage.dart';
 
-class detaillehistoriquePage extends StatelessWidget {
-  final List<Map<String, dynamic>> historiqueTransactions; // Liste des transactions
+class detaillehistoriquePage extends StatefulWidget {
+  final String numCpte;
 
-  // Constructeur pour recevoir la liste des transactions
-  detaillehistoriquePage({required this.historiqueTransactions});
+  detaillehistoriquePage({required this.numCpte});
+
+  @override
+  _detaillehistoriquePageState createState() => _detaillehistoriquePageState();
+}
+
+class _detaillehistoriquePageState extends State<detaillehistoriquePage> {
+  List<Map<String, dynamic>> historiqueTransactions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getTransactions(widget.numCpte);  // Utilisez numCpte passé en argument
+  }
+
+  Future<void> _getTransactions(String num_cpte) async {
+    final response = await http.get(
+      Uri.parse('http://api.credit-fef.com/mobile/MouvementMobilePage.php?num_cpte=$num_cpte'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      if (data is List) {
+        setState(() {
+          historiqueTransactions = List<Map<String, dynamic>>.from(data);
+        });
+      } else {
+        setState(() {
+          historiqueTransactions = []; // Si pas de données, mettre une liste vide
+        });
+      }
+    } else {
+      setState(() {
+        historiqueTransactions = []; // Si erreur de connexion, liste vide
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,109 +53,55 @@ class detaillehistoriquePage extends StatelessWidget {
         backgroundColor: Color(0xff0c355f),
       ),
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // Espace entre l'AppBar et le début du contenu
-            SliverToBoxAdapter(
-              child: SizedBox(height: 30),
-            ),
+        child: ListView.builder(
+          itemCount: historiqueTransactions.length,
+          itemBuilder: (context, index) {
+            var transaction = historiqueTransactions[index];
+            Color montantColor = Colors.green;
+            String montantPrefix = '';
 
-            // Ajouter le logo au-dessus du contenu
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Image.asset(
-                  'assets/images/logo.png', // Chemin de votre logo
-                  height: 150, // Ajuster la taille du logo
-                  width: MediaQuery.of(context).size.width, // Utiliser toute la largeur de l'écran
-                  fit: BoxFit.cover, // Le logo remplira toute la largeur tout en respectant le ratio
+            if (transaction['type_mvt'] == 'OPERATION DE RETRAIT' || transaction['type_mvt'] == 'FRAIS D\'ENTRETIEN DE COMPTE') {
+              montantColor = Colors.red;
+              montantPrefix = '-';
+            }
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Card(
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListTile(
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${transaction['type_mvt']}',
+                        style: TextStyle(fontSize: 16, color: Colors.blue, fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+                        '${transaction['createdat']}',
+                        style: TextStyle(fontSize: 15, color: Colors.black),
+                      ),
+                    ],
+                  ),
+                  trailing: Text(
+                    '$montantPrefix${transaction['mtnt_dep_mvt']} FCFA',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 19, color: montantColor),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TransactionDetailsPage(transaction: transaction),
+                      ),
+                    );
+                  },
                 ),
               ),
-            ),
-
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Historique des transactions',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 19,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                  var transaction = historiqueTransactions[index];
-
-                  // Vérification des types de transaction pour appliquer la couleur
-                  Color montantColor = Colors.green; // Valeur par défaut (dépôt)
-                  String montantPrefix = ''; // Pas de signe au début pour les dépôts
-
-                  if (transaction['type_mvt'] == 'OPERATION DE RETRAIT' || transaction['type_mvt'] == 'FRAIS D\'ENTRETIEN DE COMPTE') {
-                    montantColor = Colors.red; // Si c'est un retrait ou frais d'entretien
-                    montantPrefix = '-'; // Ajouter le signe - pour les retraits et frais d'entretien
-                  }
-
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0), // Ajout d'un espacement vertical
-                    child: Card(
-                      elevation: 5, // Ombre de la Card
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12), // Coins arrondis
-                      ),
-                      child: ListTile(
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${transaction['type_mvt']}',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.blue,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Text(
-                              '${transaction['createdat']}',
-                              style: TextStyle(fontSize: 15, color: Colors.black),
-                            ),
-                          ],
-                        ),
-                        trailing: Text(
-                          '$montantPrefix${transaction['mtnt_dep_mvt']} FCFA',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 19,
-                            color: montantColor, // Applique la couleur selon le type
-                          ),
-                        ),
-                        onTap: () {
-                          // Naviguer vers la page de détails de la transaction
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => TransactionDetailsPage(transaction: transaction),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  );
-                },
-                childCount: historiqueTransactions.length, // Afficher toutes les transactions
-              ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

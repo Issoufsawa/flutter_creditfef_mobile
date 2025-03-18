@@ -90,8 +90,6 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,7 +102,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
         child: Form(
           key: _formKey, // Ajout de la clé pour validation
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,  // Centrer la colonne entière
             children: [
               Center(
                 child: Text(
@@ -154,8 +152,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
 
               SizedBox(height: 30),
 
-// Nouveau mot de passe
-
+              // Nouveau mot de passe
               Container(
                 width: 300, // Spécifiez la largeur souhaitée ici
                 child: TextFormField(
@@ -193,7 +190,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
 
               SizedBox(height: 30),
 
-// Confirmer le nouveau mot de passe
+              // Confirmer le nouveau mot de passe
               Container(
                 width: 300, // Largeur personnalisée
                 child: TextFormField(
@@ -232,7 +229,8 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                 ),
               ),
 
-              SizedBox(height: 10),
+              SizedBox(height: 20),
+
               // Bouton de validation
               Center(
                 child: ElevatedButton(

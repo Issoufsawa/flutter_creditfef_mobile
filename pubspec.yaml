@@ -43,6 +43,7 @@ dependencies:
   location: ^8.0.0
   latlong2: ^0.9.1
   qr_flutter: ^4.0.0 
+  fl_chart: ^0.70.2
 
 
 

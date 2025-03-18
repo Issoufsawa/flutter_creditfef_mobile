@@ -92,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => detaillehistoriquePage(
-                              historiqueTransactions: historiqueTransactions,
+                              numCpte: _num_cpte,  // Passez seulement numCpte
                             ),
                           ),
                         );
