@@ -21,13 +21,15 @@ class _StatistiquePageState extends State<StatistiquePage> {
   @override
   void initState() {
     super.initState();
-    _fetchData();
+    _fetchData(); // Appeler la fonction pour récupérer les données au démarrage
   }
 
   // Fonction pour récupérer les données de l'API
   Future<void> _fetchData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    numCpte = prefs.getString('num_cpte') ?? ''; // Utiliser un compte par défaut si non trouvé
+    numCpte =
+        prefs.getString('num_cpte') ??
+        ''; // Utiliser un compte par défaut si non trouvé
 
     final url =
         'http://api.credit-fef.com/mobile/MouvementMobilePageStat.php?num_cpte=$numCpte';
@@ -36,76 +38,112 @@ class _StatistiquePageState extends State<StatistiquePage> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print(data);
+        print("Réponse de l'API: $data");
 
-        // Vérifier si la réponse contient les données attendues
         if (data['status'] == 'success') {
-          final List<dynamic> stats = data['data'];
+          final stats = data['data']; // Liste des transactions
+          print(
+            "Type des données reçues: ${stats.runtimeType}",
+          ); // Vérification du type des données
 
-          // Construire les données pour le graphique en barres
           List<BarChartGroupData> groups = [];
+          Map<int, double> aggregatedData =
+              {}; // Utiliser un int pour les mois (1-12)
 
-          // Ajouter un mappage explicite des mois en entiers
-          Map<String, int> monthMap = {
-            "Jan": 1,
-            "Feb": 2,
-            "Mar": 3,
-            "Apr": 4,
-            "May": 5,
-            "Jun": 6,
-            "Jul": 7,
-            "Aug": 8,
-            "Sep": 9,
-            "Oct": 10,
-            "Nov": 11,
-            "Dec": 12,
-          };
-
+          // Parcourir les données
           for (var stat in stats) {
-            double value = stat['mtnt_dep_mvt'].toDouble();  // Montant de la transaction
-            String month = stat['createdat'].substring(5, 7);  // Extraire le mois de la date (format "2025-03-17")
+            if (stat is Map<String, dynamic>) {
+              // Affichage de la structure de chaque transaction pour débogage
+              print("Transaction reçue: $stat");
 
-            // Convertir le mois de chaîne à entier
-            int xValue = monthMap[month] ?? 0;  // Si le mois n'est pas trouvé, on met 0 par défaut
+              // Extraire le montant et le convertir en double
+              double value = 0.0;
+              if (stat['mtnt_dep_mvt'] != null) {
+                value =
+                    (stat['mtnt_dep_mvt'] is num)
+                        ? (stat['mtnt_dep_mvt'] as num).toDouble()
+                        : double.tryParse(stat['mtnt_dep_mvt'].toString()) ??
+                            0.0;
+              }
 
-            groups.add(BarChartGroupData(
-              x: xValue,  // Utiliser l'entier comme index pour le mois
-              barRods: [
-                BarChartRodData(
-                  toY: value,  // La valeur des transactions
-                  color: Colors.blue,
-                  width: 10,
-                ),
-              ],
-            ));
+              // Extraire la date (createdat) et convertir en DateTime
+              String dateString =
+                  stat['createdat']; // Exemple: "2025-03-17 12:44:09"
+              DateTime date;
+              try {
+                date = DateTime.parse(dateString); // Conversion en DateTime
+              } catch (e) {
+                print("Erreur lors de la conversion de la date: $e");
+                continue; // Passer à l'élément suivant si la date est invalide
+              }
+
+              // Extraire le mois de la date (le mois est un entier, de 1 à 12)
+              int monthIndex = date.month; // Mois extrait sous forme d'entier
+              print(
+                "Mois extrait: $monthIndex (Type: ${monthIndex.runtimeType})",
+              ); // Afficher le type du mois
+
+              // Vérification pour s'assurer que le mois est un entier valide
+              if (monthIndex is! int) {
+                print(
+                  "Erreur: mois n'est pas un entier. Mois reçu: $monthIndex",
+                );
+                continue;
+              }
+
+              // Agrégation des montants par mois
+              if (!aggregatedData.containsKey(monthIndex)) {
+                aggregatedData[monthIndex] = 0.0;
+              }
+              aggregatedData[monthIndex] = aggregatedData[monthIndex]! + value;
+            } else {
+              print("Element inattendu dans stats: $stat");
+            }
           }
 
+          // Ajouter les données agrégées dans les groupes pour le graphique
+          aggregatedData.forEach((month, totalAmount) {
+            print(
+              "Mois: $month, Total: $totalAmount",
+            ); // Affichage pour débogage
+            groups.add(
+              BarChartGroupData(
+                x: month, // Le mois est un entier entre 1 et 12
+                barRods: [
+                  BarChartRodData(
+                    toY: totalAmount,
+                    color: Colors.blue,
+                    width: 10,
+                  ),
+                ],
+              ),
+            );
+          });
+
           setState(() {
-            barData = groups;
+            barData = groups; // Affecter les groupes au graphique
             isLoading = false;
           });
         } else {
           setState(() {
             isLoading = false;
-            barData = [];  // Vide les données du graphique si le statut n'est pas success
+            barData = [];
           });
         }
       } else {
         setState(() {
           isLoading = false;
-          barData = [];  // Vide les données du graphique en cas de réponse HTTP non valide
+          barData = [];
         });
       }
     } catch (e) {
       print("Erreur lors de la récupération des données: $e");
       setState(() {
         isLoading = false;
-        barData = [];  // Vide les données en cas d'erreur
+        barData = [];
       });
     }
   }
-
-
 
   // Méthode pour afficher l'en-tête avec le logo et le titre "Statistiques sur les transactions"
   Widget _head() {
@@ -162,23 +200,25 @@ class _StatistiquePageState extends State<StatistiquePage> {
           slivers: [
             // Affichage de l'en-tête
             SliverToBoxAdapter(
-              child: _head(), // Utilisation de _head sans hauteur spécifique ici
+              child:
+                  _head(), // Utilisation de _head sans hauteur spécifique ici
             ),
             // Affichage du graphique des statistiques
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: isLoading
-                    ? Center(child: CircularProgressIndicator())
-                    : barData.isEmpty
-                    ? Center(child: Text("Aucune donnée disponible"))
-                    : BarChart(
-                  BarChartData(
-                    borderData: FlBorderData(show: false),
-                    titlesData: FlTitlesData(show: true),
-                    barGroups: barData,
-                  ),
-                ),
+                child:
+                    isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : barData.isEmpty
+                        ? Center(child: Text("Aucune donnée disponible"))
+                        : BarChart(
+                          BarChartData(
+                            borderData: FlBorderData(show: false),
+                            titlesData: FlTitlesData(show: true),
+                            barGroups: barData, // Affichage des barres
+                          ),
+                        ),
               ),
             ),
           ],
