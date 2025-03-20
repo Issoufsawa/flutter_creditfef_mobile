@@ -17,13 +17,13 @@ class _StatistiquePageState extends State<StatistiquePage> {
   late String numCpte; // Variable pour stocker le numéro de compte
   bool isLoading = true; // Indicateur pour afficher le chargement
   List<BarChartGroupData> barData = []; // Données pour le graphique en barres
+  int selectedMonth = DateTime.now().month; // Mois par défaut (mois actuel)
 
-  // Dictionnaire des types de mouvement et leurs couleurs respectives
-  final Map<String, Color> movementColors = {
-    'ENVOI D\'ARGENT': Colors.blue,
-    'OPERATION DE RETRAIT': Colors.red,
-    'OPERATION DE DEPOT': Colors.green,
-  };
+  // Liste des mois en texte
+  final List<String> monthNames = [
+    "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+  ];
 
   @override
   void initState() {
@@ -42,18 +42,13 @@ class _StatistiquePageState extends State<StatistiquePage> {
       if (response.statusCode == 200) {
         // Décoder la réponse de l'API comme une liste de données
         List<dynamic> data = json.decode(response.body);
-        // print("Réponse de l'API: $data");  // Afficher toute la réponse pour vérification
 
-        // Vérifier si la réponse contient des données
         if (data.isNotEmpty && data[0] is Map<String, dynamic>) {
           // Si les données sont sous forme de liste d'objets
           List<dynamic> stats = data; // Liste des transactions
 
-
           List<BarChartGroupData> groups = [];
-          Map<int, double> aggregatedDataEnvio = {}; // Agrégation pour ENVOI D'ARGENT
-          Map<int, double> aggregatedDataRetrait = {}; // Agrégation pour OPERATION DE RETRAIT
-          Map<int, double> aggregatedDataDepot = {}; // Agrégation pour OPERATION DE DEPOT
+          Map<String, double> aggregatedData = {}; // Agrégation des différents types de mouvements
 
           // Parcourir les données des transactions
           for (var stat in stats) {
@@ -66,76 +61,39 @@ class _StatistiquePageState extends State<StatistiquePage> {
                     : double.tryParse(stat['mtnt_dep_mvt'].toString()) ?? 0.0;
               }
 
-              // Extraire la date (createdat) et convertir en DateTime
-              String dateString = stat['createdat']; // Exemple: "2025-03-17 12:44:09"
-              DateTime date;
-              try {
-                // Essayer de convertir la chaîne en DateTime
-                date = DateTime.parse(dateString); // Conversion en DateTime
-              } catch (e) {
-                print("Erreur lors de la conversion de la date: $e");
-                continue; // Passer à l'élément suivant si la date est invalide
-              }
+              // Extraire le mois et le type de mouvement
+              String movementType = stat['type_mvt']; // Type de mouvement
+              int monthIndex = DateTime.parse(stat['createdat']).month; // Mois de la transaction
 
-              // Extraire le mois de la date (le mois est un entier, de 1 à 12)
-              int monthIndex = date.month; // Mois extrait sous forme d'entier
-
-              // Agrégation des montants par type de mouvement et par mois
-              if (stat['type_mvt'] == 'ENVOI D\'ARGENT') {
-                aggregatedDataEnvio[monthIndex] = (aggregatedDataEnvio[monthIndex] ?? 0.0) + value;
-              } else if (stat['type_mvt'] == 'OPERATION DE RETRAIT') {
-                aggregatedDataRetrait[monthIndex] = (aggregatedDataRetrait[monthIndex] ?? 0.0) + value;
-              } else if (stat['type_mvt'] == 'OPERATION DE DEPOT') {
-                aggregatedDataDepot[monthIndex] = (aggregatedDataDepot[monthIndex] ?? 0.0) + value;
+              // Si le mois de la transaction correspond au mois sélectionné, l'agréger
+              if (monthIndex == selectedMonth) {
+                aggregatedData[movementType] = (aggregatedData[movementType] ?? 0.0) + value;
               }
             }
           }
 
           // Ajout des données agrégées dans les groupes pour le graphique
-          aggregatedDataEnvio.forEach((month, totalAmount) {
-            groups.add(
-              BarChartGroupData(
-                x: month,
-                barRods: [
-                  BarChartRodData(
-                    toY: totalAmount,
-                    color: movementColors['ENVOI D\'ARGENT']!, // Utiliser la couleur pour ENVOI D'ARGENT
-                    width: 10,
-                  ),
-                ],
-              ),
-            );
-          });
+          // Chaque type de mouvement correspond à un index dans le graphique
+          final movementTypes = ['ENVOI D\'ARGENT', 'OPERATION DE RETRAIT', 'OPERATION DE DEPOT'];
+          final movementColors = [Colors.blue, Colors.red, Colors.green];
 
-          aggregatedDataRetrait.forEach((month, totalAmount) {
-            groups.add(
-              BarChartGroupData(
-                x: month,
-                barRods: [
-                  BarChartRodData(
-                    toY: totalAmount,
-                    color: movementColors['OPERATION DE RETRAIT']!, // Utiliser la couleur pour RETRAIT
-                    width: 10,
-                  ),
-                ],
-              ),
-            );
-          });
+          for (int i = 0; i < movementTypes.length; i++) {
+            String movementType = movementTypes[i];
+            double totalAmount = aggregatedData[movementType] ?? 0.0;
 
-          aggregatedDataDepot.forEach((month, totalAmount) {
             groups.add(
               BarChartGroupData(
-                x: month,
+                x: i, // Utilisation de l'index des types de mouvements
                 barRods: [
                   BarChartRodData(
                     toY: totalAmount,
-                    color: movementColors['OPERATION DE DEPOT']!, // Utiliser la couleur pour DEPOT
+                    color: movementColors[i], // Couleur assignée pour chaque type de mouvement
                     width: 10,
                   ),
                 ],
               ),
             );
-          });
+          }
 
           setState(() {
             barData = groups; // Affecter les groupes au graphique
@@ -223,19 +181,76 @@ class _StatistiquePageState extends State<StatistiquePage> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: isLoading
-                    ? Center(child: CircularProgressIndicator())
-                    : barData.isEmpty
-                    ? Center(child: Text("Aucune donnée disponible"))
-                    : Container(
-                  height: 300, // Hauteur fixe pour le graphique
-                  child: BarChart(
-                    BarChartData(
-                      borderData: FlBorderData(show: false),
-                      titlesData: FlTitlesData(show: true),
-                      barGroups: barData, // Affichage des barres
+                child: Column(
+                  children: [
+                    // Toujours afficher le bouton pour sélectionner le mois
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Sélectionner le mois:',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        DropdownButton<int>(
+                          value: selectedMonth,
+                          items: List.generate(12, (index) {
+                            return DropdownMenuItem<int>(
+                              value: index + 1,
+                              child: Text(monthNames[index]), // Affichage du mois en texte
+                            );
+                          }),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedMonth = value!; // Mise à jour du mois sélectionné
+                              isLoading = true; // Réinitialiser le chargement
+                            });
+                            _fetchData(); // Recharger les données avec le mois sélectionné
+                          },
+                        ),
+                      ],
                     ),
-                  ),
+                    SizedBox(height: 8), // Espacement après le bouton de sélection
+
+                    // Affichage du graphique ou du message "Aucune donnée disponible"
+                    isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : barData.isEmpty
+                        ? Center(child: Text("Aucune donnée disponible"))
+                        : Column(
+                      children: [
+                        SizedBox(height: 40), // Espace au-dessus du graphique
+                        Container(
+                          height: 410, // Hauteur fixe pour le graphique
+                          child: BarChart(
+                            BarChartData(
+                              borderData: FlBorderData(show: false),
+                              titlesData: FlTitlesData(
+                                show: true,
+                                bottomTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    getTitlesWidget: (value, TitleMeta meta) {
+                                      // Afficher les types de mouvements en bas
+                                      if (value == 0) {
+                                        return Text('ENVOI ');
+                                      } else if (value == 1) {
+                                        return Text('RETRAIT');
+                                      } else if (value == 2) {
+                                        return Text('DEPOT');
+                                      }
+                                      return Text('');
+                                    },
+                                  ),
+                                ),
+                              ),
+                              barGroups: barData, // Affichage des barres
+                              gridData: FlGridData(show: true),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
