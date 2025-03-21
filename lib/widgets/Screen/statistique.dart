@@ -215,7 +215,7 @@ class _StatistiquePageState extends State<StatistiquePage> {
                     isLoading
                         ? Center(child: CircularProgressIndicator())
                         : barData.isEmpty
-                        ? Center(child: Text("Aucune donnée disponible"))
+                        ? Center(child: Text("Aucune donnée disponible", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)))
                         : Column(
                       children: [
                         SizedBox(height: 40), // Espace au-dessus du graphique
@@ -230,9 +230,9 @@ class _StatistiquePageState extends State<StatistiquePage> {
                                   sideTitles: SideTitles(
                                     showTitles: true,
                                     getTitlesWidget: (value, TitleMeta meta) {
-                                      // Afficher les types de mouvements en bas
+                                      // Afficher les types de mouvements en bas sans les indices
                                       if (value == 0) {
-                                        return Text('ENVOI ');
+                                        return Text('ENVOI');
                                       } else if (value == 1) {
                                         return Text('RETRAIT');
                                       } else if (value == 2) {
