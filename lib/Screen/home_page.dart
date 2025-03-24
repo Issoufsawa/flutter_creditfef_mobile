@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../widgets/Screen/detaillehistoriquepage.dart';
+import '../widgets/Screen/slideqrcode.dart';
 import '../widgets/Screen/transactiondetaillepage.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -68,10 +69,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],  // Définir la couleur de fond gris clair pour l'ensemble de la page
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            SliverToBoxAdapter(child: SizedBox(height: 340, child: _head())),
+            SliverToBoxAdapter(child: SizedBox(height: 360, child: _head())),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -82,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       'Historique des transactions',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        fontSize: 19,
+                        fontSize: 23,
                         color: Colors.black,
                       ),
                     ),
@@ -101,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         'Voir tout',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 15,
+                          fontSize: 23,
                           color: Colors.grey,
                         ),
                       ),
@@ -112,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Column(
                   children: List.generate(
                     historiqueTransactions.length > 5 ? 5 : historiqueTransactions.length,
@@ -138,6 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             );
                           },
                           child: Card(
+                            color: Colors.white,
                             elevation: 5,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
@@ -155,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     ),
                                     Text(
                                       '${transaction['createdat']}',
-                                      style: TextStyle(fontSize: 15, color: Colors.black),
+                                      style: TextStyle(fontSize: 15, color: Colors.black,fontWeight: FontWeight.w600),
                                     ),
                                   ],
                                 ),
@@ -179,12 +182,14 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+
   Widget _head() {
     return Stack(
       children: [
+        // Conteneur supérieur avec fond dégradé
         Container(
           width: double.infinity,
-          height: 248,
+          height: 300,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [Color(0xff0c355f), Color(0xff014f86)],
@@ -204,115 +209,130 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.only(top: 35, left: 30),
+            padding: const EdgeInsets.only(top: 35, left: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Crédit fef',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20, color: Colors.white),
-                ),
+                // Titre du compte courant
+                _buildAccountTitle(),
+
+                SizedBox(height: 50),
+
+                // Numéro de compte
+                _buildAccountNumber(),
+
+                SizedBox(height: 50),
+
+                // Solde du compte
+                _buildAccountBalance(),
               ],
             ),
           ),
         ),
+        // Bouton en haut du container
         Positioned(
-          top: 90,
-          left: 30,
-          child: Container(
-            height: 200,
-            width: 300,
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 6, 113, 213),
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 10,
-                  offset: Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'COMPTE COURANT SOCIAL (C COS)',
-                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.white),
-                      ),
-                    ],
+          top: 270,  // Distance du haut du container
+          left: 12,  // Décalage depuis le côté gauche
+          right: 12, // Décalage depuis le côté droit
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SlideqrcodePage(title: 'slideqrcode',),
                   ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange, // Couleur du bouton
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30), // Bord arrondi
                 ),
-                SizedBox(height: 7),
-                Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                  child: Row(
-                    children: [
-                      Text(
-                        _num_cpte,
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 25),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 13,
-                            backgroundColor: Color(0xff0c355f),
-                            child: Icon(Icons.arrow_downward, color: Colors.white, size: 19),
-                          ),
-                          SizedBox(width: 7),
-                          Text(
-                            'Solde',
-                            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Color.fromARGB(255, 216, 216, 216)),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 6),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        _isTextVisible ? ' ${_solde} \FCFA' : '********',
-                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17, color: Colors.white),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          _isTextVisible ? Icons.visibility_off : Icons.visibility,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _isTextVisible = !_isTextVisible;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+              ),
+              child: Text(
+                "Effectuer une opération", // Texte du bouton
+                style: TextStyle(color: Colors.white, fontSize: 20 , fontWeight: FontWeight.bold,),
+              ),
             ),
           ),
         ),
       ],
     );
   }
+
+
+
+  Widget _buildAccountTitle() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'COMPTE COURANT SOCIAL (C COS)',
+            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: Colors.white),
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.notifications,  // Icône de notification
+              color: Colors.white,   // Couleur de l'icône
+              size: 24,              // Taille de l'icône
+            ),
+            onPressed: () {
+              // Action à effectuer lors du clic sur l'icône de notification
+              print("Icône de notification cliquée");
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+
+// Numéro de compte
+  Widget _buildAccountNumber() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: Row(
+        children: [
+          Text(
+            _num_cpte,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+
+// Solde du compte
+  Widget _buildAccountBalance() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            _isTextVisible ? ' ${_solde} \FCFA' : '********',
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 32, color: Colors.white),
+          ),
+          IconButton(
+            icon: Icon(
+              _isTextVisible ? Icons.visibility_off : Icons.visibility,
+              color: Colors.white,
+              size: 32,
+            ),
+            onPressed: () {
+              setState(() {
+                _isTextVisible = !_isTextVisible;
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
 }
