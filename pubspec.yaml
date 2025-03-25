@@ -44,6 +44,8 @@ dependencies:
   latlong2: ^0.9.1
   qr_flutter: ^4.0.0 
   fl_chart: ^0.70.2
+  toggle_switch: ^2.1.0
+  smooth_page_indicator: ^1.0.0+2
 
 
 

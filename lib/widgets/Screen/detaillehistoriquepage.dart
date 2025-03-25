@@ -48,6 +48,7 @@ class _detaillehistoriquePageState extends State<detaillehistoriquePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text('Historique des transactions'),
         backgroundColor: Color(0xff0c355f),
