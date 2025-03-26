@@ -124,8 +124,11 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                   decoration: InputDecoration(
                     labelText: 'Ancien mot de passe',
                     labelStyle: TextStyle(color: Color(0xff0c355f)),
-                    border: OutlineInputBorder(
+                    border: UnderlineInputBorder(
                       borderSide: BorderSide(color: Color(0xff0c355f)),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xff0c355f)), // Couleur bleue lorsque le champ a le focus
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -161,8 +164,11 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                   decoration: InputDecoration(
                     labelText: 'Nouveau mot de passe',
                     labelStyle: TextStyle(color: Color(0xff0c355f)),
-                    border: OutlineInputBorder(
+                    border: UnderlineInputBorder(
                       borderSide: BorderSide(color: Color(0xff0c355f)),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xff0c355f)), // Couleur bleue lorsque le champ a le focus
                     ),
                     contentPadding: EdgeInsets.symmetric(vertical: 18.0, horizontal: 12.0),
                     suffixIcon: IconButton(
@@ -199,8 +205,11 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                   decoration: InputDecoration(
                     labelText: 'Confirmer le nouveau mot de passe',
                     labelStyle: TextStyle(color: Color(0xff0c355f)),
-                    border: OutlineInputBorder(
+                    border: UnderlineInputBorder(
                       borderSide: BorderSide(color: Color(0xff0c355f)),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xff0c355f)), // Couleur bleue lorsque le champ a le focus
                     ),
                     contentPadding: EdgeInsets.symmetric(vertical: 18.0, horizontal: 12.0),
                     suffixIcon: IconButton(
@@ -245,7 +254,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 14),
+                        fontSize: 16),
                   ),
                 ),
               ),

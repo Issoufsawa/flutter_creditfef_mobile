@@ -17,6 +17,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   String _nom_cli = ""; // Variable pour le nom du client
   String _num_cpte_cli = ""; // Variable pour le numéro de compte du client
+  String _agence = "";
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
       // Récupérer le numéro de compte et le nom depuis SharedPreferences
       _num_cpte_cli = prefs.getString('num_cpte') ?? 'Numéro de compte non défini';
       _nom_cli = prefs.getString('nom') ?? 'Nom non défini';
+      _agence = prefs.getString('agence') ?? 'Agence non défini';
     });
   }
 
@@ -50,7 +52,19 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 20), // Ajouter un espace au-dessus du Card
+                      // Titre "compte"
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Text(
+                          'Compte',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Color(0xff0c355f),
+                          ),
+                        ),
+                      ),
+                      // Regrouper les deux Cards dans une seule Column à l'intérieur d'un Card
                       Card(
                         elevation: 5,
                         shape: RoundedRectangleBorder(
@@ -59,6 +73,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Column(
                           children: [
                             ListTile(
+                              leading: Icon(
+                                Icons.account_balance, // Icône pour le numéro de compte
+                                color: Color(0xff0c355f),
+                              ),
                               title: Text(
                                 'Numéro de compte',
                                 style: TextStyle(
@@ -72,10 +90,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                 style: TextStyle(fontSize: 16, color: Colors.black),
                               ),
                             ),
-                            Divider(),
                             ListTile(
+                              leading: Icon(
+                                Icons.business, // Icône pour l'agence de création
+                                color: Color(0xff0c355f),
+                              ),
                               title: Text(
-                                'Nom et Prénom',
+                                'Agence de Création',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
@@ -83,51 +104,123 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               ),
                               subtitle: Text(
-                                _nom_cli, // Afficher le nom du client
+                                _agence, // Afficher l'agence de création
                                 style: TextStyle(fontSize: 16, color: Colors.black),
                               ),
                             ),
-                            Divider(),
-                            ListTile(
-                              title: Text(
-                                'Modifier le mot de passe',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: Color(0xff0c355f),
-                                ),
-                              ),
-                              onTap: () {
-                                // Rediriger vers la page de réinitialisation du mot de passe
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => PasswordResetPage(),
-                                  ),
-                                );
-                              },
-                            ),
-                            Divider(),
-                            ListTile(
-                              title: Text(
-                                'Se déconnecter',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: Color(0xff0c355f),
-                                ),
-                              ),
-                              onTap: () {
-                                _showFicheDialog(context); // Afficher la boîte de dialogue de déconnexion
-                              },
-                            ),
                           ],
+                        ),
+                      ),
+                      SizedBox(height: 10), // Espacement après la Card "Compte"
+                      // Titre "Info Client"
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Text(
+                          'Info Client',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Color(0xff0c355f),
+                          ),
+                        ),
+                      ),
+                      // Card pour le nom et prénom
+                      Card(
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.person, // Icône pour le nom et prénom
+                            color: Color(0xff0c355f),
+                          ),
+                          title: Text(
+                            'Nom et Prénom',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Color(0xff0c355f),
+                            ),
+                          ),
+                          subtitle: Text(
+                            _nom_cli, // Afficher le nom du client
+                            style: TextStyle(fontSize: 16, color: Colors.black),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10), // Espacement entre les Card
+                      // Titre "Sécurité"
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Text(
+                          'Sécurité',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Color(0xff0c355f),
+                          ),
+                        ),
+                      ),
+                      // Card pour la modification du mot de passe
+                      Card(
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.lock, // Icône de cadenas pour la modification du mot de passe
+                            color: Color(0xff0c355f),
+                          ),
+                          title: Text(
+                            'Modifier le mot de passe',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Color(0xff0c355f),
+                            ),
+                          ),
+                          onTap: () {
+                            // Rediriger vers la page de réinitialisation du mot de passe
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PasswordResetPage(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      SizedBox(height: 10), // Espacement entre les Card
+                      Card(
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.exit_to_app, // Icône de porte pour la déconnexion
+                            color: Color(0xff0c355f),
+                          ),
+                          title: Text(
+                            'Se déconnecter',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Color(0xff0c355f),
+                            ),
+                          ),
+                          onTap: () {
+                            _showFicheDialog(context); // Afficher la boîte de dialogue de déconnexion
+                          },
                         ),
                       ),
                     ],
                   ),
                 ),
               ]),
+
             ),
           ],
         ),

@@ -199,7 +199,7 @@ class _SlideqrcodePageState extends State<SlideqrcodePage> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         decoration: BoxDecoration(
-          color: Color(0xff0c355f), // Couleur de fond
+          color: Colors.grey.shade300, // Couleur de fond
           borderRadius: BorderRadius.circular(30), // Bordures arrondies
           border: Border.all(color: Colors.grey.shade500, width: 2), // Bordure personnalisée
           boxShadow: [
@@ -212,7 +212,7 @@ class _SlideqrcodePageState extends State<SlideqrcodePage> {
         ),
         child: CupertinoSegmentedControl<int>(
           groupValue: _selectedIndex,
-          selectedColor: Colors.grey.shade500, // Bleu foncé sélectionné
+          selectedColor: Color(0xff0c355f), // Bleu foncé sélectionné
           unselectedColor: Colors.transparent,
           borderColor: Colors.transparent, // On masque la bordure d'origine
           pressedColor: Colors.blue.shade100, // Effet appuyé

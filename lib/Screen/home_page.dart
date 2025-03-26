@@ -267,7 +267,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildAccountTitle() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -279,7 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(
               Icons.notifications,  // Icône de notification
               color: Colors.white,   // Couleur de l'icône
-              size: 24,              // Taille de l'icône
+              size: 20,              // Taille de l'icône
             ),
             onPressed: () {
               // Action à effectuer lors du clic sur l'icône de notification

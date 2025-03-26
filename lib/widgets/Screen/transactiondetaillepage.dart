@@ -22,22 +22,14 @@ class TransactionDetailsPage extends StatelessWidget {
         title: Text('Détails de la transaction'),
         backgroundColor: Color(0xff0c355f),
       ),
+        backgroundColor: Colors.grey[200],
         body: Padding(
           padding: const EdgeInsets.all(10.0),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Ajouter le logo au-dessus du contenu
-                Image.asset(
-                  'assets/images/logo.png',
-                  height: 200, // Ajuster la taille du logo
-                  width: MediaQuery.of(context).size.width, // Utiliser toute la largeur de l'écran
-                  fit: BoxFit.cover, // Le logo remplit toute la largeur tout en respectant le ratio
-                ),
-                // Supprimer ou ajuster le SizedBox si besoin
-                // SizedBox(height: 0), // Espacement après le logo (inutile si height est 0)
-
+                SizedBox(height: 120),
                 // Card sans hauteur fixe, utilise tout l'espace disponible
                 Card(
                   elevation: 5,

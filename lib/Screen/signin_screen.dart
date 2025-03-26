@@ -107,6 +107,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                       ),
                       const SizedBox(height: 20.0),
+                      // Champ de texte numéro de compte avec ligne dessous
                       TextFormField(
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -117,25 +118,16 @@ class _SignInScreenState extends State<SignInScreen> {
                         controller: numero,
                         style: const TextStyle(color: Colors.white),
                         decoration: InputDecoration(
-                          label: const Text(
-                            'Numéro de compte',
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
+                          labelText: 'Numéro de compte',
+                          labelStyle: const TextStyle(color: Colors.white),
                           hintText: 'Entrez le numéro de compte',
                           hintStyle: const TextStyle(color: Colors.white),
-                          border: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white),
-                            borderRadius: BorderRadius.circular(10),
+                          border: InputBorder.none,
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white),
-                            borderRadius: BorderRadius.circular(10),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
                           ),
                           suffixIcon: Icon(
                             Icons.book, // Replace this with the icon you prefer
@@ -144,9 +136,8 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                         ),
                       ),
-
-
                       const SizedBox(height: 20.0),
+                      // Champ de texte mot de passe avec ligne dessous
                       TextFormField(
                         obscureText: !_isPasswordVisible, // Toggle visibility
                         obscuringCharacter: '*',
@@ -159,25 +150,16 @@ class _SignInScreenState extends State<SignInScreen> {
                         controller: password,
                         style: const TextStyle(color: Colors.white),
                         decoration: InputDecoration(
-                          label: const Text(
-                            'Mot de passe',
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
+                          labelText: 'Mot de passe',
+                          labelStyle: const TextStyle(color: Colors.white),
                           hintText: 'Entrez le mot de passe',
                           hintStyle: const TextStyle(color: Colors.white),
-                          border: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white),
-                            borderRadius: BorderRadius.circular(10),
+                          border: InputBorder.none,
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white),
-                            borderRadius: BorderRadius.circular(10),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(
