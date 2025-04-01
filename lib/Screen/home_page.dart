@@ -71,107 +71,115 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       backgroundColor: Colors.grey[200],  // Définir la couleur de fond gris clair pour l'ensemble de la page
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(child: SizedBox(height: 360, child: _head())),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Historique des transactions',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 23,
-                        color: Colors.black,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => detaillehistoriquePage(
-                              numCpte: _num_cpte,  // Passez seulement numCpte
-                            ),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'Voir tout',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 23,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+        child: Column(
+          children: [
+            // En-tête fixe qui ne défile pas
+            SizedBox(
+              height: 360, // Hauteur de l'en-tête
+              child: _head(), // Appel de la méthode _head
             ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Column(
-                  children: List.generate(
-                    historiqueTransactions.length > 5 ? 5 : historiqueTransactions.length,
-                        (index) {
-                      var transaction = historiqueTransactions[index];
-                      Color montantColor = Colors.green;
-                      String montantPrefix = '';
 
-                      if (transaction['type_mvt'] == 'OPERATION DE RETRAIT' || transaction['type_mvt'] == 'FRAIS D\'ENTRETIEN DE COMPTE') {
-                        montantColor = Colors.red;
-                        montantPrefix = '-';
-                      }
-
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 2.0),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => TransactionDetailsPage(transaction: transaction),
-                              ),
-                            );
-                          },
-                          child: Card(
-                            color: Colors.white,
-                            elevation: 5,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: ListTile(
-                                contentPadding: EdgeInsets.zero,
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${transaction['type_mvt']}',
-                                      style: TextStyle(fontSize: 16, color: Colors.blue, fontWeight: FontWeight.w600),
-                                    ),
-                                    Text(
-                                      '${transaction['createdat']}',
-                                      style: TextStyle(fontSize: 15, color: Colors.black,fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
-                                ),
-                                trailing: Text(
-                                  '$montantPrefix${transaction['mtnt_dep_mvt']} \FCFA',
-                                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: montantColor),
-                                ),
-                              ),
-                            ),
+            // Section pour l'historique des transactions
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Historique des transactions',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 23,
+                      color: Colors.black,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => detaillehistoriquePage(
+                            numCpte: _num_cpte,  // Passez seulement numCpte
                           ),
                         ),
                       );
                     },
+                    child: Text(
+                      'Voir tout',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 23,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Utilisation de SingleChildScrollView pour rendre défilable le reste du contenu
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(
+                    children: List.generate(
+                      historiqueTransactions.length > 5 ? 5 : historiqueTransactions.length,
+                          (index) {
+                        var transaction = historiqueTransactions[index];
+                        Color montantColor = Colors.green;
+                        String montantPrefix = '';
+
+                        if (transaction['type_mvt'] == 'OPERATION DE RETRAIT' || transaction['type_mvt'] == 'FRAIS D\'ENTRETIEN DE COMPTE') {
+                          montantColor = Colors.red;
+                          montantPrefix = '-';
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2.0),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TransactionDetailsPage(transaction: transaction),
+                                ),
+                              );
+                            },
+                            child: Card(
+                              color: Colors.white,
+                              elevation: 5,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: ListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${transaction['type_mvt']}',
+                                        style: TextStyle(fontSize: 16, color: Colors.blue, fontWeight: FontWeight.w600),
+                                      ),
+                                      Text(
+                                        '${transaction['createdat']}',
+                                        style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.w600),
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Text(
+                                    '$montantPrefix${transaction['mtnt_dep_mvt']} \FCFA',
+                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: montantColor),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -254,7 +262,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               child: Text(
                 "Effectuer une opération", // Texte du bouton
-                style: TextStyle(color: Colors.white, fontSize: 20 , fontWeight: FontWeight.bold,),
+                style: TextStyle(color: Colors.white, fontSize: 20 , fontWeight: FontWeight.bold, ),
               ),
             ),
           ),
@@ -262,8 +270,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
     );
   }
-
-
 
   Widget _buildAccountTitle() {
     return Padding(
@@ -291,8 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-
-// Numéro de compte
+  // Numéro de compte
   Widget _buildAccountNumber() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -307,7 +312,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-// Solde du compte
+  // Solde du compte
   Widget _buildAccountBalance() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -334,5 +339,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-
-}  
+}
