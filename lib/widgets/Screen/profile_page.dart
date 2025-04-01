@@ -33,7 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
       // Récupérer le numéro de compte et le nom depuis SharedPreferences
       _num_cpte_cli = prefs.getString('num_cpte') ?? 'Numéro de compte non défini';
       _nom_cli = prefs.getString('nom') ?? 'Nom non défini';
-      _agence = prefs.getString('agence') ?? 'Agence non défini';
+      _agence = prefs.getString('agence') ?? 'Agence non définie';
     });
   }
 
@@ -42,12 +42,12 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(child: _head()), // En-tête avec logo et texte du profil
-            SliverList(
-              delegate: SliverChildListDelegate([
-                Padding(
+        child: Column(
+          children: [
+            _head(), // En-tête avec logo et texte du profil
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,8 +219,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                 ),
-              ]),
-
+              ),
             ),
           ],
         ),
@@ -230,48 +229,40 @@ class _ProfilePageState extends State<ProfilePage> {
 
   // Méthode pour afficher l'en-tête avec le logo et le titre "Détails du Profil"
   Widget _head() {
-    return Stack(
-      children: [
-        Column(
+    return Container(
+      width: double.infinity,
+      height: 248,
+      decoration: BoxDecoration(
+        color: Color(0xff0c355f),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 40, left: 3),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              width: double.infinity,
-              height: 248,
-              decoration: BoxDecoration(
-                color: Color(0xff0c355f),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
-                ),
+            Image.asset(
+              'assets/images/logo.png', // Logo de l'application
+              height: 137,
+              width: 560,
+              fit: BoxFit.cover,
+            ),
+            SizedBox(height: 30), // Espacement sous le logo
+            Text(
+              'Détails du Profil',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 20,
+                color: Colors.white,
               ),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 40, left: 3),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/logo.png', // Logo de l'application
-                      height: 137,
-                      width: 560,
-                      fit: BoxFit.cover,
-                    ),
-                    SizedBox(height: 30), // Espacement sous le logo
-                    Text(
-                      'Détails du Profil',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 20,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.center, // Centrer le texte
-                    ),
-                  ],
-                ),
-              ),
+              textAlign: TextAlign.center, // Centrer le texte
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 

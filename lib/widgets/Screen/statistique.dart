@@ -174,84 +174,84 @@ class _StatistiquePageState extends State<StatistiquePage> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: _head(), // Utilisation de _head
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    // Toujours afficher le bouton pour sélectionner le mois
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Sélectionner le mois:',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        DropdownButton<int>(
-                          value: selectedMonth,
-                          items: List.generate(12, (index) {
-                            return DropdownMenuItem<int>(
-                              value: index + 1,
-                              child: Text(monthNames[index]), // Affichage du mois en texte
-                            );
-                          }),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedMonth = value!; // Mise à jour du mois sélectionné
-                              isLoading = true; // Réinitialiser le chargement
-                            });
-                            _fetchData(); // Recharger les données avec le mois sélectionné
-                          },
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 8), // Espacement après le bouton de sélection
+        child: Column(
+          children: [
+            _head(), // En-tête avec logo
+            Expanded(
+              child: SingleChildScrollView(  // Utilisation de SingleChildScrollView pour le reste du contenu
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      // Toujours afficher le bouton pour sélectionner le mois
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Sélectionner le mois:',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          DropdownButton<int>(
+                            value: selectedMonth,
+                            items: List.generate(12, (index) {
+                              return DropdownMenuItem<int>(
+                                value: index + 1,
+                                child: Text(monthNames[index]), // Affichage du mois en texte
+                              );
+                            }),
+                            onChanged: (value) {
+                              setState(() {
+                                selectedMonth = value!; // Mise à jour du mois sélectionné
+                                isLoading = true; // Réinitialiser le chargement
+                              });
+                              _fetchData(); // Recharger les données avec le mois sélectionné
+                            },
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8), // Espacement après le bouton de sélection
 
-                    // Affichage du graphique ou du message "Aucune donnée disponible"
-                    isLoading
-                        ? Center(child: CircularProgressIndicator())
-                        : barData.isEmpty
-                        ? Center(child: Text("Aucune donnée disponible", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)))
-                        : Column(
-                      children: [
-                        SizedBox(height: 40), // Espace au-dessus du graphique
-                        Container(
-                          height: 410, // Hauteur fixe pour le graphique
-                          child: BarChart(
-                            BarChartData(
-                              borderData: FlBorderData(show: false),
-                              titlesData: FlTitlesData(
-                                show: true,
-                                bottomTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: true,
-                                    getTitlesWidget: (value, TitleMeta meta) {
-                                      // Afficher les types de mouvements en bas sans les indices
-                                      if (value == 0) {
-                                        return Text('ENVOI');
-                                      } else if (value == 1) {
-                                        return Text('RETRAIT');
-                                      } else if (value == 2) {
-                                        return Text('DEPOT');
-                                      }
-                                      return Text('');
-                                    },
+                      // Affichage du graphique ou du message "Aucune donnée disponible"
+                      isLoading
+                          ? Center(child: CircularProgressIndicator())
+                          : barData.isEmpty
+                          ? Center(child: Text("Aucune donnée disponible", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)))
+                          : Column(
+                        children: [
+                          SizedBox(height: 40), // Espace au-dessus du graphique
+                          Container(
+                            height: 410, // Hauteur fixe pour le graphique
+                            child: BarChart(
+                              BarChartData(
+                                borderData: FlBorderData(show: false),
+                                titlesData: FlTitlesData(
+                                  show: true,
+                                  bottomTitles: AxisTitles(
+                                    sideTitles: SideTitles(
+                                      showTitles: true,
+                                      getTitlesWidget: (value, TitleMeta meta) {
+                                        // Afficher les types de mouvements en bas sans les indices
+                                        if (value == 0) {
+                                          return Text('ENVOI');
+                                        } else if (value == 1) {
+                                          return Text('RETRAIT');
+                                        } else if (value == 2) {
+                                          return Text('DEPOT');
+                                        }
+                                        return Text('');
+                                      },
+                                    ),
                                   ),
                                 ),
+                                barGroups: barData, // Affichage des barres
+                                gridData: FlGridData(show: true),
                               ),
-                              barGroups: barData, // Affichage des barres
-                              gridData: FlGridData(show: true),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
