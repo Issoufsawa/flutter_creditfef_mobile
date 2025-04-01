@@ -16,7 +16,7 @@ class StatistiquePage extends StatefulWidget {
 class _StatistiquePageState extends State<StatistiquePage> {
   late String numCpte; // Variable pour stocker le numéro de compte
   bool isLoading = true; // Indicateur pour afficher le chargement
-  List<LineChartBarData> lineData = []; // Données pour le graphique en courbes
+  List<BarChartGroupData> barData = []; // Données pour le graphique en barres
   int selectedMonth = DateTime.now().month; // Mois par défaut (mois actuel)
 
   // Liste des mois en texte
@@ -24,10 +24,6 @@ class _StatistiquePageState extends State<StatistiquePage> {
     "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
     "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
   ];
-
-  // Liste des types de mouvement
-  final List<String> movementTypes = ['ENVOI D\'ARGENT', 'OPERATION DE RETRAIT', 'OPERATION DE DEPOT'];
-  final List<Color> movementColors = [Colors.blue, Colors.red, Colors.green]; // Couleurs associées aux mouvements
 
   @override
   void initState() {
@@ -48,10 +44,10 @@ class _StatistiquePageState extends State<StatistiquePage> {
         List<dynamic> data = json.decode(response.body);
 
         if (data.isNotEmpty && data[0] is Map<String, dynamic>) {
-          // Si les données sont sous forme de liste d'objets
           List<dynamic> stats = data; // Liste des transactions
 
-          Map<String, List<FlSpot>> aggregatedData = {}; // Agrégation des différents types de mouvements
+          List<BarChartGroupData> groups = [];
+          Map<String, double> aggregatedData = {}; // Agrégation des différents types de mouvements
 
           // Parcourir les données des transactions
           for (var stat in stats) {
@@ -70,59 +66,56 @@ class _StatistiquePageState extends State<StatistiquePage> {
 
               // Si le mois de la transaction correspond au mois sélectionné, l'agréger
               if (monthIndex == selectedMonth) {
-                // Initialisation des listes pour chaque type de mouvement
-                if (!aggregatedData.containsKey(movementType)) {
-                  aggregatedData[movementType] = [];
-                }
-
-                aggregatedData[movementType]?.add(FlSpot(monthIndex.toDouble(), value)); // Inverser X et Y
+                aggregatedData[movementType] = (aggregatedData[movementType] ?? 0.0) + value;
               }
             }
           }
 
-          List<LineChartBarData> lineChartData = [];
+          // Ajout des données agrégées dans les groupes pour le graphique
+          final movementTypes = ['ENVOI D\'ARGENT', 'OPERATION DE RETRAIT', 'OPERATION DE DEPOT'];
+          final movementColors = [Colors.blue, Colors.red, Colors.green];
 
-          // Créer une ligne pour chaque type de mouvement
           for (int i = 0; i < movementTypes.length; i++) {
             String movementType = movementTypes[i];
-            List<FlSpot>? dataPoints = aggregatedData[movementType];
+            double totalAmount = aggregatedData[movementType] ?? 0.0;
 
-            if (dataPoints != null && dataPoints.isNotEmpty) {
-              lineChartData.add(
-                LineChartBarData(
-                  spots: dataPoints, // Les points de données pour la courbe
-                  isCurved: true, // Rendre la ligne courbée
-                  color: movementColors[i], // Couleur de la ligne
-                  dotData: FlDotData(show: false), // Désactiver les points
-                  belowBarData: BarAreaData(show: false), // Désactiver l'ombre sous la courbe
-                ),
-              );
-            }
+            groups.add(
+              BarChartGroupData(
+                x: i, // Utilisation de l'index des types de mouvements
+                barRods: [
+                  BarChartRodData(
+                    toY: totalAmount / 5000, // Utilisation d'une échelle avec 1 cm = 5000
+                    color: movementColors[i], // Couleur assignée pour chaque type de mouvement
+                    width: 10,
+                  ),
+                ],
+              ),
+            );
           }
 
           setState(() {
-            lineData = lineChartData; // Affecter les courbes au graphique
+            barData = groups; // Affecter les groupes au graphique
             isLoading = false;
           });
         } else {
           print("Erreur : La structure des données n'est pas valide.");
           setState(() {
             isLoading = false;
-            lineData = [];
+            barData = [];
           });
         }
       } else {
         print("Erreur HTTP : ${response.statusCode}");
         setState(() {
           isLoading = false;
-          lineData = [];
+          barData = [];
         });
       }
     } catch (e) {
       print("Erreur lors de la récupération des données: $e");
       setState(() {
         isLoading = false;
-        lineData = [];
+        barData = [];
       });
     }
   }
@@ -188,12 +181,11 @@ class _StatistiquePageState extends State<StatistiquePage> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      // Toujours afficher le bouton pour sélectionner le mois
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Sélectionner le mois: ',
+                            'Sélectionner le mois:',
                             style: TextStyle(fontSize: 18),
                           ),
                           DropdownButton<int>(
@@ -206,37 +198,40 @@ class _StatistiquePageState extends State<StatistiquePage> {
                             }),
                             onChanged: (value) {
                               setState(() {
-                                selectedMonth = value!; // Mise à jour du mois sélectionné
-                                isLoading = true; // Réinitialiser le chargement
+                                selectedMonth = value!;
+                                isLoading = true;
                               });
                               _fetchData(); // Recharger les données avec le mois sélectionné
                             },
                           ),
                         ],
                       ),
-                      SizedBox(height: 1), // Espacement après le bouton de sélection
-
-                      // Affichage du graphique ou du message "Aucune donnée disponible"
+                      SizedBox(height: 20),
                       isLoading
                           ? Center(child: CircularProgressIndicator())
-                          : lineData.isEmpty
+                          : barData.isEmpty
                           ? Center(child: Text("Aucune donnée disponible", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)))
                           : Column(
                         children: [
-                          SizedBox(height: 20), // Espace au-dessus du graphique
                           Container(
                             height: 410, // Hauteur fixe pour le graphique
-                            child: LineChart(
-                              LineChartData(
-                                borderData: FlBorderData(show: true),
-                                gridData: FlGridData(show: true),
+                            child: BarChart(
+                              BarChartData(
+                                borderData: FlBorderData(show: false),
                                 titlesData: FlTitlesData(
-                                  leftTitles: AxisTitles(
+                                  show: true,
+                                  rightTitles: AxisTitles(
                                     sideTitles: SideTitles(
                                       showTitles: true,
                                       getTitlesWidget: (value, TitleMeta meta) {
-                                        // Affichage des valeurs sur l'axe Y
-                                        return Text(value.toString());
+                                        if (value == 0) {
+                                          return Text('ENVOI');
+                                        } else if (value == 1) {
+                                          return Text('RETRAIT');
+                                        } else if (value == 2) {
+                                          return Text('DEPOT');
+                                        }
+                                        return Text('');
                                       },
                                     ),
                                   ),
@@ -244,17 +239,13 @@ class _StatistiquePageState extends State<StatistiquePage> {
                                     sideTitles: SideTitles(
                                       showTitles: true,
                                       getTitlesWidget: (value, TitleMeta meta) {
-                                        // Affichage des mois sur l'axe X
-                                        int monthIndex = value.toInt();
-                                        if (monthIndex >= 1 && monthIndex <= 12) {
-                                          return Text(monthNames[monthIndex - 1]); // Affichage du mois
-                                        }
-                                        return Text('');
+                                        return Text('${value * 5000}'); // Afficher les valeurs sur l'axe X
                                       },
                                     ),
                                   ),
                                 ),
-                                lineBarsData: lineData, // Affichage des courbes
+                                barGroups: barData, // Affichage des barres
+                                gridData: FlGridData(show: true),
                               ),
                             ),
                           ),

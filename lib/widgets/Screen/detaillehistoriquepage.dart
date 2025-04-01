@@ -83,7 +83,7 @@ class _detaillehistoriquePageState extends State<detaillehistoriquePage> {
                       ),
                       Text(
                         '${transaction['createdat']}',
-                        style: TextStyle(fontSize: 15, color: Colors.black),
+                        style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
