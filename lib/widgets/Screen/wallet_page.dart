@@ -147,11 +147,22 @@ class _WalletPageState extends State<WalletPage> {
               width: double.infinity,
               height: 248,
               decoration: BoxDecoration(
-                color: Color(0xff0c355f),
+                gradient: LinearGradient(
+                  colors: [Color(0xff0c355f), Color(0xff014f86)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(20),
                   bottomRight: Radius.circular(20),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
               ),
               child: Padding(
                 padding: const EdgeInsets.only(top: 40, left: 3),

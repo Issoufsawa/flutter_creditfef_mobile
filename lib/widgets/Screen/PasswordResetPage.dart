@@ -246,6 +246,9 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                   onPressed: _updatePassword,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30), // Bord arrondi
+                    ),
                     padding: EdgeInsets.symmetric(horizontal: 130, vertical: 7),
                     textStyle: TextStyle(fontSize: 18),
                   ),

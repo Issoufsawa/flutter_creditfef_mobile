@@ -32,7 +32,7 @@ class TransactionDetailsPage extends StatelessWidget {
                 SizedBox(height: 120),
                 // Card sans hauteur fixe, utilise tout l'espace disponible
                 Card(
-                  elevation: 5,
+                  elevation: 1,
                   margin: EdgeInsets.symmetric(vertical: 0), // Réduire ou supprimer l'espacement vertical
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),

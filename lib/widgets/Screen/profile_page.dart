@@ -66,9 +66,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       // Regrouper les deux Cards dans une seule Column à l'intérieur d'un Card
                       Card(
-                        elevation: 5,
+                        elevation: 1,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: Colors.blue, // Couleur de la bordure
+                            width: 0.5, // Épaisseur de la bordure
+                          ),
                         ),
                         child: Column(
                           children: [
@@ -126,9 +130,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       // Card pour le nom et prénom
                       Card(
-                        elevation: 5,
+                        elevation: 1,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: Colors.blue, // Couleur de la bordure
+                            width: 0.5, // Épaisseur de la bordure
+                          ),
                         ),
                         child: ListTile(
                           leading: Icon(
@@ -164,9 +172,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       // Card pour la modification du mot de passe
                       Card(
-                        elevation: 5,
+                        elevation: 1,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: Colors.blue, // Couleur de la bordure
+                            width: 0.5, // Épaisseur de la bordure
+                          ),
                         ),
                         child: ListTile(
                           leading: Icon(
@@ -194,9 +206,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       SizedBox(height: 10), // Espacement entre les Card
                       Card(
-                        elevation: 5,
+                        elevation: 1,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: Colors.blue, // Couleur de la bordure
+                            width: 0.5, // Épaisseur de la bordure
+                          ),
                         ),
                         child: ListTile(
                           leading: Icon(
@@ -233,11 +249,22 @@ class _ProfilePageState extends State<ProfilePage> {
       width: double.infinity,
       height: 248,
       decoration: BoxDecoration(
-        color: Color(0xff0c355f),
+        gradient: LinearGradient(
+          colors: [Color(0xff0c355f), Color(0xff014f86)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 10,
+            offset: Offset(0, 5),
+          ),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.only(top: 40, left: 3),

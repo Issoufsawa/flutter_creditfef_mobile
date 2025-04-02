@@ -86,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Historique des transactions',
+                    'Transactions',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 23,
@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 23,
-                        color: Colors.grey,
+                        color: Colors.blue,
                       ),
                     ),
                   ),
@@ -148,9 +148,13 @@ class _MyHomePageState extends State<MyHomePage> {
                             },
                             child: Card(
                               color: Colors.white,
-                              elevation: 5,
+                              elevation: 1,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15),
+                                side: BorderSide(
+                                  color: Colors.blue, // Couleur de la bordure
+                                  width: 0.5, // Épaisseur de la bordure
+                                ),
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.all(10.0),
@@ -303,7 +307,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Row(
         children: [
           Text(
-            _num_cpte,
+            'N° ${_num_cpte}',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23, color: Colors.white),
           ),
         ],
@@ -338,4 +342,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
+
+
+
+
 }

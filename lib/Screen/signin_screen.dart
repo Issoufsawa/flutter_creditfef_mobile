@@ -86,11 +86,22 @@ class _SignInScreenState extends State<SignInScreen> {
             child: Container(
               padding: const EdgeInsets.fromLTRB(25.0, 50.0, 25.0, 20.0),
               decoration: const BoxDecoration(
-                color: Color(0xff0c355f),
+                gradient: LinearGradient(
+                  colors: [Color(0xff0c355f), Color(0xff014f86)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(40.0),
                   topRight: Radius.circular(40.0),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
               ),
               child: SingleChildScrollView(
                 child: Form(
@@ -101,7 +112,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       Text(
                         'Content de vous revoir',
                         style: TextStyle(
-                          fontSize: 20.0,
+                          fontSize: 30.0,
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
                         ),
@@ -116,31 +127,43 @@ class _SignInScreenState extends State<SignInScreen> {
                           return null;
                         },
                         controller: numero,
-                        style: const TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white, fontSize: 18), // Texte de l'utilisateur, couleur blanche et taille de police
                         decoration: InputDecoration(
                           labelText: 'Numéro de compte',
-                          labelStyle: const TextStyle(color: Colors.white),
+                          labelStyle: const TextStyle(
+                            color: Colors.white, // Couleur du texte du label
+                            fontSize: 20, // Taille du texte du label
+                            fontWeight: FontWeight.bold, // Gras pour le label
+                          ),
                           hintText: 'Entrez le numéro de compte',
-                          hintStyle: const TextStyle(color: Colors.white),
-                          border: InputBorder.none,
+                          hintStyle: const TextStyle(
+                            color: Colors.white60, // Couleur plus claire pour le hint
+                            fontSize: 18, // Taille du texte du hint
+                          ),
+                          border: InputBorder.none, // Aucune bordure par défaut
                           focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: BorderSide(color: Colors.orange, width: 2), // Bordure sous l'élément en focus, orange ici
                           ),
                           enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: BorderSide(color: Colors.white), // Bordure lorsqu'il est actif, couleur blanche
+                          ),
+                          errorStyle: const TextStyle(
+                            color: Colors.red, // Couleur du texte d'erreur
+                            fontSize: 14, // Taille du texte d'erreur
                           ),
                           suffixIcon: Icon(
-                            Icons.book, // Replace this with the icon you prefer
-                            color: Colors.white,
-                            size: 20,
+                            Icons.book, // L'icône souhaitée
+                            color: Colors.white, // Couleur de l'icône
+                            size: 25, // Taille de l'icône
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 20.0),
                       // Champ de texte mot de passe avec ligne dessous
                       TextFormField(
-                        obscureText: !_isPasswordVisible, // Toggle visibility
-                        obscuringCharacter: '*',
+                        obscureText: !_isPasswordVisible, // Toggle visibility of the password
+                        obscuringCharacter: '*', // Character used to obscure the password
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Veuillez entrer le mot de passe';
@@ -148,33 +171,45 @@ class _SignInScreenState extends State<SignInScreen> {
                           return null;
                         },
                         controller: password,
-                        style: const TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white, fontSize: 18), // Personnaliser la couleur et la taille du texte
                         decoration: InputDecoration(
                           labelText: 'Mot de passe',
-                          labelStyle: const TextStyle(color: Colors.white),
+                          labelStyle: const TextStyle(
+                            color: Colors.white, // Couleur du label
+                            fontSize: 20, // Taille du texte du label
+                            fontWeight: FontWeight.bold, // Gras pour le label
+                          ),
                           hintText: 'Entrez le mot de passe',
-                          hintStyle: const TextStyle(color: Colors.white),
-                          border: InputBorder.none,
+                          hintStyle: const TextStyle(
+                            color: Colors.white60, // Couleur du hint, légèrement plus clair
+                            fontSize: 18, // Taille du texte du hint
+                          ),
+                          border: InputBorder.none, // Aucune bordure par défaut
                           focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: BorderSide(color: Colors.orange, width: 2), // Bordure orange au focus
                           ),
                           enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: BorderSide(color: Colors.white), // Bordure blanche en état normal
+                          ),
+                          errorStyle: const TextStyle(
+                            color: Colors.red, // Couleur du texte d'erreur
+                            fontSize: 14, // Taille du texte d'erreur
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                              _isPasswordVisible ? Icons.visibility_off : Icons.visibility, // Icône pour afficher/masquer
                               color: Colors.white,
-                              size: 20,
+                              size: 25, // Taille de l'icône
                             ),
                             onPressed: () {
                               setState(() {
-                                _isPasswordVisible = !_isPasswordVisible;
+                                _isPasswordVisible = !_isPasswordVisible; // Basculer la visibilité du mot de passe
                               });
                             },
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 20.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -209,27 +244,43 @@ class _SignInScreenState extends State<SignInScreen> {
                       const SizedBox(height: 15.0),
                       SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            var data = {
-                              'numero': numero.text,
-                              'mdp': password.text,
-                            };
-                            print(data);
-                            _signIn(data);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orange,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26, // Couleur de l'ombre
+                                blurRadius: 8, // Flou de l'ombre
+                                offset: Offset(0, 4), // Position de l'ombre (décalage horizontal et vertical)
+                              ),
+                            ],
                           ),
-                          child: const Text(
-                            'Se connecter',
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.bold,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              var data = {
+                                'numero': numero.text,
+                                'mdp': password.text,
+                              };
+                              print(data);
+                              _signIn(data);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.orange, // Couleur du bouton
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30), // Bord arrondi
+                              ),
+                              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                            ),
+                            child: const Text(
+                              'Se connecter',
+                              style: TextStyle(
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                      )
+
                     ],
                   ),
                 ),
