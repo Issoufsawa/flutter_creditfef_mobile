@@ -51,7 +51,15 @@ class _detaillehistoriquePageState extends State<detaillehistoriquePage> {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text('Historique des transactions'),
-        backgroundColor: Color(0xff0c355f),
+      flexibleSpace: Container(
+      decoration: BoxDecoration(
+      gradient: LinearGradient(
+          colors: [Color(0xff0c355f), Color(0xff014f86)],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    ),
+    ),
+    ),
       ),
       body: SafeArea(
         child: ListView.builder(
@@ -67,11 +75,15 @@ class _detaillehistoriquePageState extends State<detaillehistoriquePage> {
             }
 
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              padding: const EdgeInsets.symmetric(vertical: 2.0),
               child: Card(
-                elevation: 5,
+                elevation: 1,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(15),
+                  side: BorderSide(
+                    color: Colors.blue, // Couleur de la bordure
+                    width: 0.5, // Épaisseur de la bordure
+                  ),
                 ),
                 child: ListTile(
                   subtitle: Column(
@@ -89,7 +101,7 @@ class _detaillehistoriquePageState extends State<detaillehistoriquePage> {
                   ),
                   trailing: Text(
                     '$montantPrefix${transaction['mtnt_dep_mvt']} FCFA',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 19, color: montantColor),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: montantColor),
                   ),
                   onTap: () {
                     Navigator.push(
