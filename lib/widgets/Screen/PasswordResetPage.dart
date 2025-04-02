@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // Pour le décodage de la réponse JSON
 import 'package:shared_preferences/shared_preferences.dart';
-
 class PasswordResetPage extends StatefulWidget {
   @override
   _PasswordResetPageState createState() => _PasswordResetPageState();
@@ -20,22 +19,19 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
 
   // Fonction pour vérifier et changer le mot de passe via l'API
   Future<void> _updatePassword() async {
-    // Validation du formulaire avant d'envoyer la requête
     if (_formKey.currentState?.validate() ?? false) {
       String oldPassword = _oldPasswordController.text.trim();
       String newPassword = _newPasswordController.text.trim();
       String confirmPassword = _confirmPasswordController.text.trim();
 
-      // Récupérer le numéro de compte stocké dans SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? accountNumber = prefs.getString('num_cpte'); // Numéro de compte
+      String? accountNumber = prefs.getString('num_cpte');
 
-      // Corps de la requête
       final Map<String, String> requestBody = {
         'mdp': oldPassword,
         'nouveau': newPassword,
         'confirme': confirmPassword,
-        'numero': accountNumber ?? "", // Ajouter le numéro de compte dans la requête
+        'numero': accountNumber ?? "",
       };
 
       try {
@@ -44,12 +40,8 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
           body: requestBody,
         );
 
-        // Afficher la réponse brute pour le débogage
-        print("Réponse brute du serveur: ${response.body}");
-
-        // Vérifier le code de statut de la réponse
         if (response.statusCode == 200) {
-          String responseData = response.body.trim(); // La réponse brute est une chaîne, pas un objet JSON
+          String responseData = response.body.trim();
 
           String message = "";
           switch (responseData) {
@@ -63,10 +55,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
               message = "Les mots de passe ne correspondent pas";
               break;
             default:
-              print("Réponse inattendue du serveur: $responseData");
               message = "Mot de passe modifié avec succès";
-
-              // Réinitialiser les champs de texte après succès
               setState(() {
                 _oldPasswordController.clear();
                 _newPasswordController.clear();
@@ -95,14 +84,22 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Modifier le mot de passe'),
-        backgroundColor: Color(0xff0c355f),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xff0c355f), Color(0xff014f86)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Form(
-          key: _formKey, // Ajout de la clé pour validation
+          key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,  // Centrer la colonne entière
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Center(
                 child: Text(
@@ -114,10 +111,9 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                 ),
               ),
               SizedBox(height: 30),
-
               // Ancien mot de passe
               Container(
-                width: 300, // Définissez la largeur du champ ici
+                width: 300,
                 child: TextFormField(
                   controller: _oldPasswordController,
                   obscureText: !_isOldPasswordVisible,
@@ -128,7 +124,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                       borderSide: BorderSide(color: Color(0xff0c355f)),
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xff0c355f)), // Couleur bleue lorsque le champ a le focus
+                      borderSide: BorderSide(color: Color(0xff0c355f)),
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -152,12 +148,10 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                   },
                 ),
               ),
-
               SizedBox(height: 30),
-
               // Nouveau mot de passe
               Container(
-                width: 300, // Spécifiez la largeur souhaitée ici
+                width: 300,
                 child: TextFormField(
                   controller: _newPasswordController,
                   obscureText: !_isNewPasswordVisible,
@@ -168,7 +162,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                       borderSide: BorderSide(color: Color(0xff0c355f)),
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xff0c355f)), // Couleur bleue lorsque le champ a le focus
+                      borderSide: BorderSide(color: Color(0xff0c355f)),
                     ),
                     contentPadding: EdgeInsets.symmetric(vertical: 18.0, horizontal: 12.0),
                     suffixIcon: IconButton(
@@ -193,12 +187,10 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                   },
                 ),
               ),
-
               SizedBox(height: 30),
-
               // Confirmer le nouveau mot de passe
               Container(
-                width: 300, // Largeur personnalisée
+                width: 300,
                 child: TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: !_isConfirmPasswordVisible,
@@ -209,7 +201,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                       borderSide: BorderSide(color: Color(0xff0c355f)),
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xff0c355f)), // Couleur bleue lorsque le champ a le focus
+                      borderSide: BorderSide(color: Color(0xff0c355f)),
                     ),
                     contentPadding: EdgeInsets.symmetric(vertical: 18.0, horizontal: 12.0),
                     suffixIcon: IconButton(
@@ -237,9 +229,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                   },
                 ),
               ),
-
               SizedBox(height: 20),
-
               // Bouton de validation
               Center(
                 child: ElevatedButton(
@@ -247,7 +237,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30), // Bord arrondi
+                      borderRadius: BorderRadius.circular(30),
                     ),
                     padding: EdgeInsets.symmetric(horizontal: 130, vertical: 7),
                     textStyle: TextStyle(fontSize: 18),
