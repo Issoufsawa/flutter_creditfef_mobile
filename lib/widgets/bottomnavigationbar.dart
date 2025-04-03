@@ -55,11 +55,13 @@ class _BottomState extends State<Bottom> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,  // S'assurer que la colonne n'occupe pas trop d'espace
                     children: [
-                      Icon(
-                        Icons.home,
-                        size: 30,
-                        color: index_color == 0 ? Color(0xff0c355f) : Colors.grey, // Change de couleur en fonction de l'index
+                      Image.asset(
+                        'assets/home.png',  // Chemin vers votre image
+                        width: 30,  // Définir la taille de l'image
+                        height: 30, // Définir la taille de l'image
+                        color: index_color == 0 ? Color(0xff0c355f) : Colors.grey,  // Change de couleur en fonction de l'index
                       ),
+
                       SizedBox(height: 4),  // Espacement entre l'icône et le texte
                       Text(
                         'Accueil',  // Le label sous l'icône
@@ -109,10 +111,11 @@ class _BottomState extends State<Bottom> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,  // Assure que la colonne n'occupe pas trop d'espace
                     children: [
-                      Icon(
-                        Icons.location_on,
-                        size: 30,
-                        color: index_color == 2 ? Color(0xff0c355f) : Colors.grey, // Change la couleur en fonction de l'index
+                      Image.asset(
+                        'assets/location.png',  // Chemin vers votre image
+                        width: 30,  // Définir la taille de l'image
+                        height: 30, // Définir la taille de l'image
+                        color: index_color == 2 ? Color(0xff0c355f) : Colors.grey,  // Change de couleur en fonction de l'index
                       ),
                       SizedBox(height: 4),  // Espacement entre l'icône et le texte
                       Text(
@@ -136,10 +139,11 @@ class _BottomState extends State<Bottom> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,  // Assure que la colonne n'occupe pas trop d'espace
                     children: [
-                      Icon(
-                        Icons.bar_chart,  // Utilisation de l'icône pour les statistiques
-                        size: 30,
-                        color: index_color == 3 ? Color(0xff0c355f) : Colors.grey,  // Change la couleur en fonction de l'index
+                      Image.asset(
+                        'assets/diagram.png',  // Chemin vers votre image
+                        width: 30,  // Définir la taille de l'image
+                        height: 30, // Définir la taille de l'image
+                        color: index_color == 3 ? Color(0xff0c355f) : Colors.grey,  // Change de couleur en fonction de l'index
                       ),
                       SizedBox(height: 4),  // Espacement entre l'icône et le texte
                       Text(
@@ -162,10 +166,11 @@ class _BottomState extends State<Bottom> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,  // Assure que la colonne n'occupe pas trop d'espace
                     children: [
-                      Icon(
-                        Icons.person_outline,  // Icône pour le profil
-                        size: 30,
-                        color: index_color == 4 ? Color(0xff0c355f) : Colors.grey,  // Change la couleur en fonction de l'index
+                      Image.asset(
+                        'assets/user.png',  // Chemin vers votre image
+                        width: 30,  // Définir la taille de l'image
+                        height: 30, // Définir la taille de l'image
+                        color: index_color == 4 ? Color(0xff0c355f) : Colors.grey,  // Change de couleur en fonction de l'index
                       ),
                       SizedBox(height: 4),  // Espacement entre l'icône et le texte
                       Text(
