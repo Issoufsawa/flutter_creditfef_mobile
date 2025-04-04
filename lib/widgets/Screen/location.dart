@@ -69,75 +69,43 @@ class _LocationPageState extends State<LocationPage> {
     _mapController.move(_currentLocation, 13.0);
   }
 
-  // Méthode pour afficher l'en-tête avec le logo et le titre "Localiser une de nos agences"
-  Widget _head() {
-    return Stack(
-      children: [
-        Column(
-          children: [
-            Container(
-              width: double.infinity,
-              height: 248,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xff0c355f), Color(0xff014f86)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 10,
-                    offset: Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 40, left: 3),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/logo.png', // Logo de l'application
-                      height: 137,
-                      width: 560,
-                      fit: BoxFit.cover,
-                    ),
-                    SizedBox(height: 15), // Ajuster l'espacement sous le logo
-                    Text(
-                      'Localiser une de nos agences',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 20,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.center, // Centrer le texte
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xff0c355f), Color(0xff014f86)], // Couleurs du dégradé
+              begin: Alignment.topLeft, // Début du dégradé
+              end: Alignment.bottomRight, // Fin du dégradé
+            ),
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)), // Coins arrondis
+          ),
+          child: AppBar(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Localiser une de nos agences',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 20,
+                  ),
+                ),
+              ],
+            ),
+            centerTitle: true, // Centrer le titre
+            backgroundColor: Colors.transparent, // AppBar transparent pour laisser apparaître le dégradé
+            elevation: 0, // Supprimer l'ombre de l'AppBar
+          ),
+        ),
+      ),
       backgroundColor: Colors.grey[200],
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // Affichage de l'en-tête
-            SliverToBoxAdapter(
-              child: _head(), // Utilisation de _head sans hauteur spécifique ici
-            ),
             // Affichage de la carte
             SliverToBoxAdapter(
               child: SizedBox(

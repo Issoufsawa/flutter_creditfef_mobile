@@ -49,17 +49,27 @@ class _detaillehistoriquePageState extends State<detaillehistoriquePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
-      appBar: AppBar(
-        title: Text('Historique des transactions'),
-      flexibleSpace: Container(
-      decoration: BoxDecoration(
-      gradient: LinearGradient(
-          colors: [Color(0xff0c355f), Color(0xff014f86)],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    ),
-    ),
-    ),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xff0c355f), Color(0xff014f86)], // Dégradé
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)), // Coins arrondis
+          ),
+          child: AppBar(
+            title: Text(
+              'Historique des transactions',
+              style: TextStyle(fontSize: 20),
+            ),
+            centerTitle: true, // Centrer le titre
+            backgroundColor: Colors.transparent, // AppBar transparent pour laisser apparaître le dégradé
+            elevation: 0, // Supprimer l'ombre de l'AppBar
+          ),
+        ),
       ),
       body: SafeArea(
         child: ListView.builder(

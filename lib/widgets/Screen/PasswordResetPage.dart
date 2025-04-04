@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // Pour le décodage de la réponse JSON
 import 'package:shared_preferences/shared_preferences.dart';
+
 class PasswordResetPage extends StatefulWidget {
   @override
   _PasswordResetPageState createState() => _PasswordResetPageState();
@@ -82,15 +83,25 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Modifier le mot de passe'),
-        flexibleSpace: Container(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xff0c355f), Color(0xff014f86)],
+              colors: [Color(0xff0c355f), Color(0xff014f86)], // Dégradé
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)), // Coins arrondis
+          ),
+          child: AppBar(
+            title: Text(
+              'Modifier le mot de passe',
+              style: TextStyle(fontSize: 20),
+            ),
+            centerTitle: true, // Centrer le titre
+            backgroundColor: Colors.transparent, // AppBar transparent pour laisser apparaître le dégradé
+            elevation: 0, // Supprimer l'ombre de l'AppBar
           ),
         ),
       ),

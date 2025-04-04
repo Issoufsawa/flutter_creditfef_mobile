@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // Pour décoder la réponse JSON
-import 'package:fl_chart/fl_chart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class StatistiquePage extends StatefulWidget {
   const StatistiquePage({super.key, required this.title});
@@ -86,7 +86,7 @@ class _StatistiquePageState extends State<StatistiquePage> {
                   BarChartRodData(
                     toY: totalAmount / 5000, // Utilisation d'une échelle avec 1 cm = 5000
                     color: movementColors[i], // Couleur assignée pour chaque type de mouvement
-                    width: 10,
+                    width: 16, // Largeur des barres plus grande pour un meilleur affichage
                   ),
                 ],
               ),
@@ -120,74 +120,34 @@ class _StatistiquePageState extends State<StatistiquePage> {
     }
   }
 
-  // Méthode pour afficher l'en-tête avec le logo et le titre "Statistiques sur les transactions"
-  Widget _head() {
-    return Stack(
-      children: [
-        Column(
-          children: [
-            Container(
-              width: double.infinity,
-              height: 248,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xff0c355f), Color(0xff014f86)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 10,
-                    offset: Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 40, left: 3),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/logo.png', // Logo de l'application
-                      height: 137,
-                      width: 560,
-                      fit: BoxFit.cover,
-                    ),
-                    SizedBox(height: 15),
-                    Text(
-                      'Statistiques sur les transactions',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 20,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xff0c355f), Color(0xff014f86)], // Couleurs du dégradé
+              begin: Alignment.topLeft, // Début du dégradé
+              end: Alignment.bottomRight, // Fin du dégradé
+            ),
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)), // Coins arrondis
+          ),
+          child: AppBar(
+            title: Text('Statistiques sur les Transactions'),
+            centerTitle: true,
+            backgroundColor: Colors.transparent, // AppBar transparent pour laisser apparaître le dégradé
+            elevation: 0, // Supprimer l'ombre de l'AppBar
+          ),
+        ),
+      ),
       backgroundColor: Colors.grey[200],
       body: SafeArea(
         child: Column(
           children: [
-            _head(), // En-tête avec logo
             Expanded(
-              child: SingleChildScrollView(  // Utilisation de SingleChildScrollView pour le reste du contenu
+              child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(

@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Screen/signin_screen.dart';
 import 'package:flutter_application_1/widgets/Screen/PasswordResetPage.dart';
+import 'package:flutter_application_1/widgets/Screen/statistique.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+
+import 'location.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key, required this.title});
@@ -44,7 +47,52 @@ class _ProfilePageState extends State<ProfilePage> {
       body: SafeArea(
         child: Column(
           children: [
-            _head(), // En-tête avec logo et texte du profil
+            // AppBar sous forme de Card avec un dégradé linéaire
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xff0c355f), Color(0xff014f86)], // Couleurs du dégradé
+                  begin: Alignment.topLeft, // Début du dégradé
+                  end: Alignment.bottomRight, // Fin du dégradé
+                ),
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+              ),
+              child: Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+                ),
+                margin: EdgeInsets.all(0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xff0c355f), Color(0xff014f86)], // Couleurs du dégradé
+                      begin: Alignment.topLeft, // Début du dégradé
+                      end: Alignment.bottomRight, // Fin du dégradé
+                    ),
+                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Profil',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white, // Texte en blanc pour contraster avec le fond
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+            ),
+
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
@@ -56,7 +104,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         child: Text(
-                          'Compte',
+                          'Info Compte',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
@@ -78,24 +126,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             ListTile(
                               leading: Icon(
-                                Icons.account_balance, // Icône pour le numéro de compte
-                                color: Color(0xff0c355f),
-                              ),
-                              title: Text(
-                                'Numéro de compte',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: Color(0xff0c355f),
-                                ),
-                              ),
-                              subtitle: Text(
-                                _num_cpte_cli, // Afficher le numéro de compte
-                                style: TextStyle(fontSize: 16, color: Colors.black),
-                              ),
-                            ),
-                            ListTile(
-                              leading: Icon(
                                 Icons.business, // Icône pour l'agence de création
                                 color: Color(0xff0c355f),
                               ),
@@ -111,6 +141,54 @@ class _ProfilePageState extends State<ProfilePage> {
                                 _agence, // Afficher l'agence de création
                                 style: TextStyle(fontSize: 16, color: Colors.black),
                               ),
+                            ),
+                            ListTile(
+                              leading: Image.asset(
+                                'assets/location.png',  // Chemin vers votre image
+                                width: 30,  // Définir la taille de l'image
+                                height: 30, // Définir la taille de l'image
+                              ),
+                              title: Text(
+                                'Localiser une Agence',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Color(0xff0c355f),
+                                ),
+                              ),
+                              onTap: () {
+                                // Rediriger vers la page de réinitialisation du mot de passe
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LocationPage(title: 'App  mobile'),
+                                  ),
+                                );
+                              },
+                            ),
+                            ListTile(
+                              leading: Image.asset(
+                                'assets/diagram.png',  // Chemin vers votre image
+                                width: 30,  // Définir la taille de l'image
+                                height: 30, // Définir la taille de l'image
+                              ),
+                              title: Text(
+                                'Statistique',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Color(0xff0c355f),
+                                ),
+                              ),
+                              onTap: () {
+                                // Rediriger vers la page de réinitialisation du mot de passe
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => StatistiquePage(title: 'App  mobile'),
+                                  ),
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -139,9 +217,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                         child: ListTile(
-                          leading: Icon(
-                            Icons.person, // Icône pour le nom et prénom
-                            color: Color(0xff0c355f),
+                          leading: Image.asset(
+                            'assets/user.png',  // Chemin vers votre image
+                            width: 30,  // Définir la taille de l'image
+                            height: 30, // Définir la taille de l'image
                           ),
                           title: Text(
                             'Nom et Prénom',
@@ -236,56 +315,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Méthode pour afficher l'en-tête avec le logo et le titre "Détails du Profil"
-  Widget _head() {
-    return Container(
-      width: double.infinity,
-      height: 248,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xff0c355f), Color(0xff014f86)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 40, left: 3),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/images/logo.png', // Logo de l'application
-              height: 137,
-              width: 560,
-              fit: BoxFit.cover,
-            ),
-            SizedBox(height: 30), // Espacement sous le logo
-            Text(
-              'Détails du Profil',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 20,
-                color: Colors.white,
-              ),
-              textAlign: TextAlign.center, // Centrer le texte
             ),
           ],
         ),

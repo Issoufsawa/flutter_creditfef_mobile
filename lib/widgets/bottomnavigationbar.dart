@@ -18,8 +18,6 @@ class _BottomState extends State<Bottom> {
   List Screen = [
     MyHomePage(title: 'App  mobile'),
     WalletPage(title: 'App  mobile'),
-    LocationPage(title: 'App  mobile'),
-    StatistiquePage(title: 'App  mobile'),
     ProfilePage(title: 'App  mobile')
   ];
 
@@ -101,82 +99,26 @@ class _BottomState extends State<Bottom> {
                     ],
                   ),
                 ),
-
                 GestureDetector(
                   onTap: () {
                     setState(() {
-                      index_color = 2; // Mettre à jour l'index de couleur lorsque l'icône est tapée
+                      index_color = 2;  // Mettre à jour l'index de couleur pour le bouton Profile
                     });
                   },
                   child: Column(
                     mainAxisSize: MainAxisSize.min,  // Assure que la colonne n'occupe pas trop d'espace
                     children: [
                       Image.asset(
-                        'assets/location.png',  // Chemin vers votre image
+                        'assets/setting.png',  // Chemin vers votre image
                         width: 30,  // Définir la taille de l'image
                         height: 30, // Définir la taille de l'image
                         color: index_color == 2 ? Color(0xff0c355f) : Colors.grey,  // Change de couleur en fonction de l'index
                       ),
                       SizedBox(height: 4),  // Espacement entre l'icône et le texte
                       Text(
-                        'Localisation',  // Le label sous l'icône
+                        'Paramettre',  // Le label sous l'icône
                         style: TextStyle(
                           color: index_color == 2 ? Color(0xff0c355f) : Colors.grey,  // Change la couleur du texte en fonction de l'index
-                          fontSize: 15,  // Taille de la police pour le label
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      index_color = 3;  // Mettre à jour l'index de couleur pour le bouton Statistique
-                    });
-                  },
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,  // Assure que la colonne n'occupe pas trop d'espace
-                    children: [
-                      Image.asset(
-                        'assets/diagram.png',  // Chemin vers votre image
-                        width: 30,  // Définir la taille de l'image
-                        height: 30, // Définir la taille de l'image
-                        color: index_color == 3 ? Color(0xff0c355f) : Colors.grey,  // Change de couleur en fonction de l'index
-                      ),
-                      SizedBox(height: 4),  // Espacement entre l'icône et le texte
-                      Text(
-                        'Statistique',  // Le label sous l'icône
-                        style: TextStyle(
-                          color: index_color == 3 ? Color(0xff0c355f) : Colors.grey,  // Change la couleur du texte en fonction de l'index
-                          fontSize: 15,  // Taille de la police pour le label
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      index_color = 4;  // Mettre à jour l'index de couleur pour le bouton Profile
-                    });
-                  },
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,  // Assure que la colonne n'occupe pas trop d'espace
-                    children: [
-                      Image.asset(
-                        'assets/user.png',  // Chemin vers votre image
-                        width: 30,  // Définir la taille de l'image
-                        height: 30, // Définir la taille de l'image
-                        color: index_color == 4 ? Color(0xff0c355f) : Colors.grey,  // Change de couleur en fonction de l'index
-                      ),
-                      SizedBox(height: 4),  // Espacement entre l'icône et le texte
-                      Text(
-                        'Profile',  // Le label sous l'icône
-                        style: TextStyle(
-                          color: index_color == 4 ? Color(0xff0c355f) : Colors.grey,  // Change la couleur du texte en fonction de l'index
                           fontSize: 15,  // Taille de la police pour le label
                           fontWeight: FontWeight.w600,
                         ),
