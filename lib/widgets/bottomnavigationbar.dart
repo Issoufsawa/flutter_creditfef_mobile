@@ -65,10 +65,11 @@ class _BottomState extends State<Bottom> {
                         'Accueil',  // Le label sous l'icône
                         style: TextStyle(
                           color: index_color == 0 ? Color(0xff0c355f) : Colors.grey,  // Change la couleur du texte en fonction de l'index
-                          fontSize: 15,  // Taille de police pour le label
-                          fontWeight: FontWeight.w600,
+                          fontSize: 17,  // Taille de police pour le label
+                          fontWeight: FontWeight.bold,  // Texte en gras maximal
                         ),
                       ),
+
                     ],
                   ),
                 ),
@@ -92,8 +93,8 @@ class _BottomState extends State<Bottom> {
                         'Services',  // Le label sous l'icône
                         style: TextStyle(
                           color: index_color == 1 ? Color(0xff0c355f) : Colors.grey,  // Change la couleur du texte en fonction de l'index
-                          fontSize: 15,  // Taille de police pour le label
-                          fontWeight: FontWeight.w600,
+                          fontSize: 17,  // Taille de police pour le label
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
@@ -119,8 +120,8 @@ class _BottomState extends State<Bottom> {
                         'Paramettre',  // Le label sous l'icône
                         style: TextStyle(
                           color: index_color == 2 ? Color(0xff0c355f) : Colors.grey,  // Change la couleur du texte en fonction de l'index
-                          fontSize: 15,  // Taille de la police pour le label
-                          fontWeight: FontWeight.w600,
+                          fontSize: 17,  // Taille de la police pour le label
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],

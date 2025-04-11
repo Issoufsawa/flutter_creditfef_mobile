@@ -82,6 +82,7 @@ flutter:
     - assets/scan.png
     - assets/setting.png
     - assets/money.png
+    - assets/plus.png
     
 
   # The following line ensures that the Material Icons font is

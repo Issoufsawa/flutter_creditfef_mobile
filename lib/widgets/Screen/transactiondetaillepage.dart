@@ -18,128 +18,183 @@ class TransactionDetailsPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xff0c355f), Color(0xff014f86)], // Dégradé
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)), // Coins arrondis
-          ),
-          child: AppBar(
-            title: Text(
-              'Détails de la transaction',
-              style: TextStyle(fontSize: 20),
-            ),
-            centerTitle: true, // Centrer le titre
-            backgroundColor: Colors.transparent, // AppBar transparent pour laisser apparaître le dégradé
-            elevation: 0, // Supprimer l'ombre de l'AppBar
-          ),
-        ),
-      ),
-      backgroundColor: Colors.grey[200],
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 120),
-              // Card sans hauteur fixe, utilise tout l'espace disponible
-              Card(
-                elevation: 1,
-                margin: EdgeInsets.symmetric(vertical: 0), // Réduire ou supprimer l'espacement vertical
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+      appBar: null, // Supprimer l'AppBar
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Container avec dégradé et Card en remplacement de l'AppBar
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xff0c355f), Color(0xff014f86)], // Couleurs du dégradé
+                  begin: Alignment.topLeft, // Début du dégradé
+                  end: Alignment.bottomRight, // Fin du dégradé
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+              ),
+              child: Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+                ),
+                margin: EdgeInsets.all(0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xff0c355f), Color(0xff014f86)], // Couleurs du dégradé
+                      begin: Alignment.topLeft, // Début du dégradé
+                      end: Alignment.bottomRight, // Fin du dégradé
+                    ),
+                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        // Flèche de retour
+                        IconButton(
+                          icon: Icon(Icons.arrow_back, color: Colors.white),
+                          onPressed: () {
+                            Navigator.pop(context); // Revenir à la page précédente
+                          },
+                        ),
+                        Spacer(),
+                        Text(
+                          'Détails de la transaction', // Titre
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white, // Texte en blanc pour contraster avec le fond
+                          ),
+                        ),
+                        Spacer(),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // Corps de la page
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Code de la transaction
-                      Row(
-                        children: [
-                          SizedBox(width: 0),
-                          Text(
-                            'Code de la transaction: ',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                          ),
-                          Expanded(
-                            child: Text(
-                              '${transaction['code_mvt']}',
-                              style: TextStyle(fontSize: 16, color: Colors.black),
-                              textAlign: TextAlign.end, // Aligner le texte à droite
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 90), // Espacement entre les lignes
+                      SizedBox(height: 120), // Espace pour l'élément avec dégradé
 
-                      // Type de la transaction
-                      Row(
-                        children: [
-                          SizedBox(width: 10),
-                          Text(
-                            'Type d\'opération: ',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                          ),
-                          Expanded(
-                            child: Text(
-                              '${transaction['type_mvt']}',
-                              style: TextStyle(fontSize: 16, color: Colors.blue),
-                              textAlign: TextAlign.end,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 90), // Espacement entre les lignes
+                      // Card sans hauteur fixe, utilise tout l'espace disponible
+                      Card(
+                        elevation: 1,
+                        margin: EdgeInsets.symmetric(vertical: 0), // Réduire ou supprimer l'espacement vertical
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Ajouter le logo en haut de la Card
+                              Align(
+                                alignment: Alignment.center,
+                                child: Container(
+                                  margin: EdgeInsets.only(bottom: 16), // Espacement sous le logo
+                                  child: Image.asset(
+                                    'assets/money.png', // Remplacer par le chemin de votre logo
+                                    height: 50, // Ajuster la taille du logo
+                                    width: 50, // Ajuster la taille du logo
+                                  ),
+                                ),
+                              ),
 
-                      // Montant de la transaction
-                      Row(
-                        children: [
-                          SizedBox(width: 10),
-                          Text(
-                            'Montant: ',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                          ),
-                          Expanded(
-                            child: Text(
-                              '$montantPrefix${transaction['mtnt_dep_mvt']} FCFA',
-                              style: TextStyle(fontSize: 16, color: montantColor),
-                              textAlign: TextAlign.end,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 90), // Espacement entre les lignes
+                              // Code de la transaction
+                              Row(
+                                children: [
+                                  SizedBox(width: 0),
+                                  Text(
+                                    'Code de la transaction: ',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      '${transaction['code_mvt']}',
+                                      style: TextStyle(fontSize: 16, color: Colors.black),
+                                      textAlign: TextAlign.end, // Aligner le texte à droite
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20), // Espacement entre les lignes
 
-                      // Date de la transaction
-                      Row(
-                        children: [
-                          SizedBox(width: 10),
-                          Text(
-                            'Date et heure: ',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                              // Type de la transaction
+                              Row(
+                                children: [
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'Type d\'opération: ',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      '${transaction['type_mvt']}',
+                                      style: TextStyle(fontSize: 16, color: Colors.blue),
+                                      textAlign: TextAlign.end,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20), // Espacement entre les lignes
+
+                              // Montant de la transaction
+                              Row(
+                                children: [
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'Montant: ',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      '$montantPrefix${transaction['mtnt_dep_mvt']} FCFA',
+                                      style: TextStyle(fontSize: 16, color: montantColor),
+                                      textAlign: TextAlign.end,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20), // Espacement entre les lignes
+
+                              // Date de la transaction
+                              Row(
+                                children: [
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'Date et heure: ',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      '${transaction['createdat']}',
+                                      style: TextStyle(fontSize: 16, color: Colors.black),
+                                      textAlign: TextAlign.end,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                          Expanded(
-                            child: Text(
-                              '${transaction['createdat']}',
-                              style: TextStyle(fontSize: 16, color: Colors.black),
-                              textAlign: TextAlign.end,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

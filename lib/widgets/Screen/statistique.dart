@@ -124,7 +124,7 @@ class _StatistiquePageState extends State<StatistiquePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
+        preferredSize: Size.fromHeight(100),
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(

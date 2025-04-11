@@ -73,7 +73,7 @@ class _LocationPageState extends State<LocationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
+        preferredSize: Size.fromHeight(100), // Augmenter la taille de l'AppBar à 100 pixels
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -102,6 +102,7 @@ class _LocationPageState extends State<LocationPage> {
           ),
         ),
       ),
+
       backgroundColor: Colors.grey[200],
       body: SafeArea(
         child: CustomScrollView(
